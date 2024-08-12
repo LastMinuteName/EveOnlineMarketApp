@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -14,9 +15,9 @@ class DbModel with ChangeNotifier{
     final exist = await databaseExists(path);
 
     if(exist) {
-      print("db already exists");
+      log("db already exists");
     } else {
-      print("creating a copy from assets");
+      log("creating a copy from assets");
 
       try {
         await Directory(dirname(path)).create(recursive:true);
@@ -27,7 +28,7 @@ class DbModel with ChangeNotifier{
 
       await File(path).writeAsBytes(bytes, flush:true);
 
-      print("db copied");
+      log("db copied");
     }
 
     dbConn = await openDatabase(path);
@@ -40,6 +41,6 @@ class DbModel with ChangeNotifier{
       [typeId],
     );
 
-    print(result);
+    log(result as String);
   }
 }
