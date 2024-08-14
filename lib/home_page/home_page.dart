@@ -7,14 +7,14 @@ import 'package:eve_online_market_application/home_page/more_fragment.dart';
 
 import '../model/dbmodel.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,6 +10,12 @@ class DbModel with ChangeNotifier{
   late Database dbConn;
 
   Future<String> initDB() async {
+    await loadEveDB();
+    await initUserDB();
+    return "DB Loaded";
+  }
+
+  Future<bool> loadEveDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, "eve.db");
 
@@ -32,7 +39,50 @@ class DbModel with ChangeNotifier{
     }
 
     dbConn = await openDatabase(path);
-    return "DB Loaded";
+    return true;
+  }
+
+  Future<bool> initUserDB() async {
+    //if (await dbConn.query('sqlite_master', where: 'name = ?', whereArgs:['tablename']) == []) {}
+    return true;
+  }
+
+  Future<List> readInvMarketGroups(String? parentGroupID) async {
+    String query = "SELECT * FROM invMarketGroups";
+    String? conditions;
+    Map arguments = {
+      'parentGroupID': parentGroupID
+    };
+    List queryArguments = [];
+
+    arguments.forEach((key, value) {
+      //TODO: find a way to clean up the if chain
+      if (value != null) {
+        if (value == "NULL") {
+          if (conditions == null) {
+            conditions = "WHERE $key IS NULL";
+          }
+          else {
+            conditions = "$conditions AND $key IS NULL";
+          }
+        }
+        else {
+          if (conditions == null) {
+            conditions = "WHERE $key = ?";
+          }
+          else {
+            conditions = "$conditions AND $key = ?";
+          }
+        }
+
+        queryArguments.add(value);
+      }
+    });
+
+    return await dbConn.rawQuery(
+      query,
+      queryArguments,
+    );
   }
 
   Future<void> getByTypeId(int typeId) async {

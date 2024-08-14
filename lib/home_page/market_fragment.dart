@@ -10,8 +10,27 @@ class MarketFragment extends StatefulWidget{
 class _MyMarketFragmentState extends State<MarketFragment>{
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Market"),
+    return ListView(
+      children: [
+        ListTile(
+          leading: SizedBox(
+            width: 64,
+            height: 64,
+            child: Placeholder(),
+          ),
+          title: Text("Test"),
+          trailing: Icon(Icons.arrow_right),
+        ),
+        ListTile(
+          leading: SizedBox(
+            width: 64,
+            height: 64,
+            child: Placeholder(),
+          ),
+          title: Text("Test2"),
+          trailing: Icon(Icons.arrow_right),
+        ),
+      ],
     );
   }
 }
