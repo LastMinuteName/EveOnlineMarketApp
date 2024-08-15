@@ -1,3 +1,4 @@
+import 'package:eve_online_market_application/item_browser_page/item_browser_page.dart';
 import 'package:flutter/material.dart';
 
 class MarketFragment extends StatefulWidget{
@@ -20,6 +21,13 @@ class _MyMarketFragmentState extends State<MarketFragment>{
           ),
           title: Text("Test"),
           trailing: Icon(Icons.arrow_right),
+          onTap: (){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ItemBrowserPage(),
+              ),
+            );
+          },
         ),
         ListTile(
           leading: SizedBox(

@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
@@ -10,12 +9,12 @@ class DbModel with ChangeNotifier{
   late Database dbConn;
 
   Future<String> initDB() async {
-    await loadEveDB();
-    await initUserDB();
+    await _loadEveDB();
+    await _initUserDB();
     return "DB Loaded";
   }
 
-  Future<bool> loadEveDB() async {
+  Future<bool> _loadEveDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, "eve.db");
 
@@ -42,12 +41,12 @@ class DbModel with ChangeNotifier{
     return true;
   }
 
-  Future<bool> initUserDB() async {
+  Future<bool> _initUserDB() async {
     //if (await dbConn.query('sqlite_master', where: 'name = ?', whereArgs:['tablename']) == []) {}
     return true;
   }
 
-  Future<List> readInvMarketGroups(String? parentGroupID) async {
+  Future<List> readInvMarketGroups({String? parentGroupID}) async {
     String query = "SELECT * FROM invMarketGroups";
     String? conditions;
     Map arguments = {
@@ -73,11 +72,13 @@ class DbModel with ChangeNotifier{
           else {
             conditions = "$conditions AND $key = ?";
           }
-        }
 
-        queryArguments.add(value);
+          queryArguments.add(value);
+        }
       }
     });
+
+    query = "$query $conditions";
 
     return await dbConn.rawQuery(
       query,

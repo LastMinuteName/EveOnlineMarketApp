@@ -5,7 +5,7 @@ import 'package:eve_online_market_application/home_page/home_fragment.dart';
 import 'package:eve_online_market_application/home_page/market_fragment.dart';
 import 'package:eve_online_market_application/home_page/more_fragment.dart';
 
-import '../model/dbmodel.dart';
+import '../model/database/dbmodel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

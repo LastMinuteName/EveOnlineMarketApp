@@ -6,5 +6,7 @@
 
   "homePageHomeTitle":  "Home",
   "homePageMarketTitle":  "Market",
-  "homePageMoreTitle":  "More"
+  "homePageMoreTitle":  "More",
+
+  "itemBrowserPageTitle": "Item Browser"
 }
