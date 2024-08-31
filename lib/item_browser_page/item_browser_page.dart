@@ -27,7 +27,6 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
   Widget build(BuildContext context) {
     Widget body = Column(
       children: [
-        marketDirectories(context),
         Expanded(child: marketList(context))
       ],
     );
@@ -47,12 +46,13 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
               icon: const Icon(Icons.search)
           ),
         ],
+        bottom: marketDirectories(),
       ),
       body: body,
     );
   }
 
-  Widget marketDirectories(BuildContext context) {
+  PreferredSize marketDirectories() {
     List<Widget> listViewContent = [];
 
     for (int i = 0; i < itemNavigationPath.length; i++) {
@@ -68,7 +68,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
             ),
             onPressed: () {if (i != itemNavigationPath.length - 1)backtrackPathTo(itemNavigationPath[i]["marketGroupID"]); },
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 itemNavigationPath[i]["marketGroupName"],
                 style: const TextStyle(
@@ -85,12 +85,15 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
       }
     }
 
-    return Container(
-      height: 30,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: listViewContent
-      ),
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(30),
+        child:Container(
+        height: 30,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: listViewContent
+        ),
+      )
     );
   }
 
