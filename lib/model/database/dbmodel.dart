@@ -86,7 +86,14 @@ class DbModel with ChangeNotifier{
     );
   }
 
-  Future<void> getByTypeId(int typeId) async {
+  Future<List> readInvTypesGroup(String marketGroupID) async {
+    return await dbConn.rawQuery(
+      'SELECT * FROM invTypes WHERE marketGroupID = ?',
+      [marketGroupID],
+    );
+  }
+
+  Future<void> readInvTypes(int typeId) async {
     List<Map> result = await dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE typeID = ?',
       [typeId],
