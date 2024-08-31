@@ -46,7 +46,7 @@ class DbModel with ChangeNotifier{
     return true;
   }
 
-  Future<List> readInvMarketGroups({String? parentGroupID}) async {
+  Future<List> readInvMarketGroups({int? parentGroupID}) async {
     String query = "SELECT * FROM invMarketGroups";
     String? conditions;
     Map arguments = {
@@ -57,7 +57,7 @@ class DbModel with ChangeNotifier{
     arguments.forEach((key, value) {
       //TODO: find a way to clean up the if chain
       if (value != null) {
-        if (value == "NULL") {
+        if (value == -1) {
           if (conditions == null) {
             conditions = "WHERE $key IS NULL";
           }

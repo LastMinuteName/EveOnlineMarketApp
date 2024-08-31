@@ -17,7 +17,7 @@ class ItemBrowserPage extends StatefulWidget {
 class _ItemBrowserPageState extends State<ItemBrowserPage> {
   List<Map> itemNavigationPath = [
     {
-      "marketGroupID": "NULL",
+      "marketGroupID": -1,
       "marketGroupName": "Browse",
       "hasTypes": 0
     }
@@ -66,7 +66,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                 borderRadius: BorderRadius.zero
               )
             ),
-            onPressed: () {  },
+            onPressed: () { backtrackPathTo(itemNavigationPath[i]["marketGroupID"]); },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
@@ -106,7 +106,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     DbModel dbConn = Provider.of<DbModel>(context);
 
     return FutureBuilder(
-      future: dbConn.readInvMarketGroups(parentGroupID: itemNavigationPath.last["marketGroupID"].toString()),
+      future: dbConn.readInvMarketGroups(parentGroupID: itemNavigationPath.last["marketGroupID"]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Widget body;
 
@@ -192,5 +192,9 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
         }
       );
     });
+  }
+
+  void backtrackPathTo(String marketGroupID) {
+    print(marketGroupID);
   }
 }
