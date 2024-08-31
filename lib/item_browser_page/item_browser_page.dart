@@ -66,7 +66,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                 borderRadius: BorderRadius.zero
               )
             ),
-            onPressed: () { backtrackPathTo(itemNavigationPath[i]["marketGroupID"]); },
+            onPressed: () {if (i != itemNavigationPath.length - 1)backtrackPathTo(itemNavigationPath[i]["marketGroupID"]); },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
@@ -194,7 +194,18 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     });
   }
 
-  void backtrackPathTo(String marketGroupID) {
-    print(marketGroupID);
+  void backtrackPathTo(int marketGroupID) {
+    bool backtracked = false;
+
+    while (backtracked == false) {
+      if (itemNavigationPath.last["marketGroupID"] == marketGroupID) {
+        backtracked = true;
+      }
+      else {
+        itemNavigationPath.removeLast();
+      }
+    }
+
+    setState(() {});
   }
 }
