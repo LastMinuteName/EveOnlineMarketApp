@@ -15,7 +15,7 @@ class ItemBrowserPage extends StatefulWidget {
 }
 
 class _ItemBrowserPageState extends State<ItemBrowserPage> {
-  List<Map> itemNavigationPath = [
+  List<Map> _itemNavigationPath = [
     {
       "marketGroupID": -1,
       "marketGroupName": "Browse",
@@ -23,39 +23,47 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     }
   ];
 
+  bool _isSearching = false;
+
   @override
   Widget build(BuildContext context) {
     Widget body = Column(
       children: [
-        Expanded(child: marketList(context))
+        Expanded(child: _marketList(context))
       ],
     );
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back)
-        ),
-        title: Text(AppLocalizations.of(context)!.itemBrowserPageTitle),
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: const Icon(Icons.search)
-          ),
-        ],
-        bottom: marketDirectories(),
-      ),
+      appBar: pageAppBar(context),
       body: body,
     );
   }
 
-  PreferredSize marketDirectories() {
+  AppBar pageAppBar(BuildContext context) {
+    return AppBar(
+      leading: IconButton(
+          onPressed: (){
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back)
+      ),
+      title: Text(AppLocalizations.of(context)!.itemBrowserPageTitle),
+      actions: [
+        IconButton(
+            onPressed: (){setState(() {
+              _isSearching = !_isSearching;
+            });},
+            icon: const Icon(Icons.search)
+        ),
+      ],
+      bottom: _marketDirectories(),
+    );
+  }
+
+  PreferredSize _marketDirectories() {
     List<Widget> listViewContent = [];
 
-    for (int i = 0; i < itemNavigationPath.length; i++) {
+    for (int i = 0; i < _itemNavigationPath.length; i++) {
       listViewContent.add(Center(
         child: SizedBox(
           height: 30,
@@ -66,11 +74,11 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                 borderRadius: BorderRadius.zero
               )
             ),
-            onPressed: () {if (i != itemNavigationPath.length - 1)backtrackPathTo(itemNavigationPath[i]["marketGroupID"]); },
+            onPressed: () {if (i != _itemNavigationPath.length - 1)_backtrackPathTo(_itemNavigationPath[i]["marketGroupID"]); },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                itemNavigationPath[i]["marketGroupName"],
+                _itemNavigationPath[i]["marketGroupName"],
                 style: const TextStyle(
                   color: Colors.black,
                 ),
@@ -80,14 +88,14 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
         )
       ));
 
-      if (i != itemNavigationPath.length - 1) {
+      if (i != _itemNavigationPath.length - 1) {
         listViewContent.add(Center(child: Text(">")));
       }
     }
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(30),
-        child:Container(
+      child: Container(
         height: 30,
         child: ListView(
           scrollDirection: Axis.horizontal,
@@ -97,59 +105,23 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     );
   }
 
-  Widget marketList(BuildContext context) {
-    if (itemNavigationPath.last["hasTypes"] == 1) {
-      return invTypesList(context);
+  Widget _marketList(BuildContext context) {
+    if (_isSearching) {
+      return _invTypesSearchList(context);
     }
 
-    return invMarketGroupList(context);
+    if (_itemNavigationPath.last["hasTypes"] == 1) {
+      return _invTypesList(context);
+    }
+
+    return _invMarketGroupList(context);
   }
 
-  FutureBuilder invMarketGroupList(BuildContext context) {
+  Widget _invTypesSearchList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
 
     return FutureBuilder(
-      future: dbConn.readInvMarketGroups(parentGroupID: itemNavigationPath.last["marketGroupID"]),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        Widget body;
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          body = centeredCircularProgressIndicator();
-          return body;
-        }
-
-        if (snapshot.hasData) {
-          body = ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                dense: true,
-                visualDensity: const VisualDensity(vertical: 4),
-                onTap: (){addPath(snapshot.data[index]);},
-                leading: SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0)
-                ),
-                title: Text(snapshot.data[index]["marketGroupName"]),
-              );
-            },
-          );
-        }
-        else {
-          body = centeredCircularProgressIndicator();
-        }
-
-        return body;
-      }
-    );
-  }
-
-  FutureBuilder invTypesList(BuildContext context) {
-    DbModel dbConn = Provider.of<DbModel>(context);
-
-    return FutureBuilder(
-        future: dbConn.readInvTypesGroup(itemNavigationPath.last["marketGroupID"].toString()),
+        future: dbConn.readInvTypesByTypeName(""),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Widget body;
 
@@ -185,9 +157,89 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     );
   }
 
-  void addPath(Map invMarketGroup) {
+  FutureBuilder _invMarketGroupList(BuildContext context) {
+    DbModel dbConn = Provider.of<DbModel>(context);
+
+    return FutureBuilder(
+      future: dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last["marketGroupID"]),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget body;
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          body = centeredCircularProgressIndicator();
+          return body;
+        }
+
+        if (snapshot.hasData) {
+          body = ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                dense: true,
+                visualDensity: const VisualDensity(vertical: 4),
+                onTap: (){_addPath(snapshot.data[index]);},
+                leading: SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0)
+                ),
+                title: Text(snapshot.data[index]["marketGroupName"]),
+              );
+            },
+          );
+        }
+        else {
+          body = centeredCircularProgressIndicator();
+        }
+
+        return body;
+      }
+    );
+  }
+
+  FutureBuilder _invTypesList(BuildContext context) {
+    DbModel dbConn = Provider.of<DbModel>(context);
+
+    return FutureBuilder(
+        future: dbConn.readInvTypesGroup(_itemNavigationPath.last["marketGroupID"].toString()),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          Widget body;
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            body = centeredCircularProgressIndicator();
+            return body;
+          }
+
+          if (snapshot.hasData) {
+            body = ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  dense: true,
+                  visualDensity: const VisualDensity(vertical: 4),
+                  onTap: (){},
+                  leading: SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0)
+                  ),
+                  title: Text(snapshot.data[index]["typeName"]),
+                );
+              },
+            );
+          }
+          else {
+            body = centeredCircularProgressIndicator();
+          }
+
+          return body;
+        }
+    );
+  }
+
+  void _addPath(Map invMarketGroup) {
     setState(() {
-      itemNavigationPath.add(
+      _itemNavigationPath.add(
         {
           "marketGroupID": invMarketGroup["marketGroupID"],
           "marketGroupName": invMarketGroup["marketGroupName"],
@@ -197,15 +249,15 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     });
   }
 
-  void backtrackPathTo(int marketGroupID) {
+  void _backtrackPathTo(int marketGroupID) {
     bool backtracked = false;
 
     while (backtracked == false) {
-      if (itemNavigationPath.last["marketGroupID"] == marketGroupID) {
+      if (_itemNavigationPath.last["marketGroupID"] == marketGroupID) {
         backtracked = true;
       }
       else {
-        itemNavigationPath.removeLast();
+        _itemNavigationPath.removeLast();
       }
     }
 

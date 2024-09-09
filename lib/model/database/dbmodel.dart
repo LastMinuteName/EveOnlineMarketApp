@@ -93,12 +93,22 @@ class DbModel with ChangeNotifier{
     );
   }
 
-  Future<void> readInvTypes(int typeId) async {
+  Future<void> readInvTypesByTypeID(int typeId) async {
     List<Map> result = await dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE typeID = ?',
       [typeId],
     );
+  }
 
-    log(result as String);
+  Future<List> readInvTypesByTypeName(String typeName) async {
+    List result = await dbConn.rawQuery(
+      '''
+      SELECT * FROM invTypes 
+      WHERE typeName LIKE ? AND published=1 AND marketGroupID NOT NULL 
+      ORDER BY TypeName ASC''',
+      ['%$typeName%'],
+    );
+
+    return result;
   }
 }
