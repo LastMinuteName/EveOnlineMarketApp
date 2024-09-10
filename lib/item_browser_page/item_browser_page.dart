@@ -24,6 +24,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
   ];
 
   bool _isSearching = false;
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +35,12 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     );
 
     return Scaffold(
-      appBar: pageAppBar(context),
+      appBar: _isSearching ? _pageAppBarSearching(context) : _pageAppBar(context),
       body: body,
     );
   }
 
-  AppBar pageAppBar(BuildContext context) {
+  AppBar _pageAppBar(BuildContext context) {
     return AppBar(
       leading: IconButton(
           onPressed: (){
@@ -51,12 +52,37 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
       actions: [
         IconButton(
             onPressed: (){setState(() {
-              _isSearching = !_isSearching;
+              _isSearching = true;
             });},
             icon: const Icon(Icons.search)
         ),
       ],
       bottom: _marketDirectories(),
+    );
+  }
+
+  AppBar _pageAppBarSearching(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      title: TextField(
+        autofocus: true,
+        controller: _textEditingController,
+        onChanged: (String value) {
+          setState(() {});
+        },
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            _textEditingController.clear();
+
+            setState(() {
+              _isSearching = false;
+            });
+          },
+          icon: const Icon(Icons.close),
+        ),
+      ],
     );
   }
 
@@ -89,7 +115,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
       ));
 
       if (i != _itemNavigationPath.length - 1) {
-        listViewContent.add(Center(child: Text(">")));
+        listViewContent.add(const Center(child: Text(">")));
       }
     }
 
@@ -119,89 +145,28 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
 
   Widget _invTypesSearchList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
+    Future<List> futureData = dbConn.readInvTypesByTypeName(_textEditingController.text);
 
-    return FutureBuilder(
-        future: dbConn.readInvTypesByTypeName(""),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          Widget body;
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            body = centeredCircularProgressIndicator();
-            return body;
-          }
-
-          if (snapshot.hasData) {
-            body = ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  dense: true,
-                  visualDensity: const VisualDensity(vertical: 4),
-                  onTap: (){},
-                  leading: SizedBox(
-                      width: 64,
-                      height: 64,
-                      child: fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0)
-                  ),
-                  title: Text(snapshot.data[index]["typeName"]),
-                );
-              },
-            );
-          }
-          else {
-            body = centeredCircularProgressIndicator();
-          }
-
-          return body;
-        }
-    );
+    return _listBuilder(futureData, 1);
   }
 
   FutureBuilder _invMarketGroupList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
+    Future<List> futureData = dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last["marketGroupID"]);
 
-    return FutureBuilder(
-      future: dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last["marketGroupID"]),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        Widget body;
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          body = centeredCircularProgressIndicator();
-          return body;
-        }
-
-        if (snapshot.hasData) {
-          body = ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                dense: true,
-                visualDensity: const VisualDensity(vertical: 4),
-                onTap: (){_addPath(snapshot.data[index]);},
-                leading: SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0)
-                ),
-                title: Text(snapshot.data[index]["marketGroupName"]),
-              );
-            },
-          );
-        }
-        else {
-          body = centeredCircularProgressIndicator();
-        }
-
-        return body;
-      }
-    );
+    return _listBuilder(futureData, 0);
   }
 
   FutureBuilder _invTypesList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
+    Future<List> futureData = dbConn.readInvTypesGroup(_itemNavigationPath.last["marketGroupID"].toString());
 
+    return _listBuilder(futureData, 1);
+  }
+
+  FutureBuilder _listBuilder(Future<List> futureCallback, int listType) {
     return FutureBuilder(
-        future: dbConn.readInvTypesGroup(_itemNavigationPath.last["marketGroupID"].toString()),
+        future: futureCallback,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Widget body;
 
@@ -214,16 +179,34 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
             body = ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
+                Image icon;
+                Text title;
+                Function onTapCallback;
+
+                //listType 0 = invMarketGroup | 1 = invTypes | ? = error
+                switch(listType) {
+                  case 0:
+                    icon = fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0);
+                    title = Text(snapshot.data[index]["marketGroupName"]);
+                    onTapCallback = () {_addPath(snapshot.data[index]);};
+                  case 1:
+                    icon = fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0);
+                    title = Text(snapshot.data[index]["typeName"]);
+                    onTapCallback = () {};
+                  default:
+                    throw const FormatException('Unsupported listType');
+                }
+
                 return ListTile(
                   dense: true,
                   visualDensity: const VisualDensity(vertical: 4),
-                  onTap: (){},
+                  onTap: (){onTapCallback();},
                   leading: SizedBox(
                       width: 64,
                       height: 64,
-                      child: fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0)
+                      child: icon,
                   ),
-                  title: Text(snapshot.data[index]["typeName"]),
+                  title: title,
                 );
               },
             );
