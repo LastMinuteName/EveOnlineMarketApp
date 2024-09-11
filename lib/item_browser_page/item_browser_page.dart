@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,6 +27,8 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
 
   bool _isSearching = false;
   TextEditingController _textEditingController = TextEditingController();
+  Timer? _searchDelayTimer;
+  final int _delayDuration = 300;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
         autofocus: true,
         controller: _textEditingController,
         onChanged: (String value) {
-          setState(() {});
+          _resetSearchDelayTimer();
         },
       ),
       actions: [
@@ -176,39 +180,43 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
           }
 
           if (snapshot.hasData) {
-            body = ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                Image icon;
-                Text title;
-                Function onTapCallback;
+            body = ScrollConfiguration(
+              behavior: const ScrollBehavior(),
+              child: ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Image icon;
+                  Text title;
+                  Function onTapCallback;
 
-                //listType 0 = invMarketGroup | 1 = invTypes | ? = error
-                switch(listType) {
-                  case 0:
-                    icon = fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0);
-                    title = Text(snapshot.data[index]["marketGroupName"]);
-                    onTapCallback = () {_addPath(snapshot.data[index]);};
-                  case 1:
-                    icon = fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0);
-                    title = Text(snapshot.data[index]["typeName"]);
-                    onTapCallback = () {};
-                  default:
-                    throw const FormatException('Unsupported listType');
-                }
+                  //listType 0 = invMarketGroup | 1 = invTypes | ? = error
+                  switch(listType) {
+                    case 0:
+                      icon = fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0);
+                      title = Text(snapshot.data[index]["marketGroupName"]);
+                      onTapCallback = () {_addPath(snapshot.data[index]);};
+                    case 1:
+                      icon = fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0);
+                      title = Text(snapshot.data[index]["typeName"]);
+                      onTapCallback = () {};
+                    default:
+                      throw const FormatException('Unsupported listType');
+                  }
 
-                return ListTile(
-                  dense: true,
-                  visualDensity: const VisualDensity(vertical: 4),
-                  onTap: (){onTapCallback();},
-                  leading: SizedBox(
+                  return ListTile(
+                    dense: true,
+                    visualDensity: const VisualDensity(vertical: 4),
+                    onTap: (){onTapCallback();},
+                    leading: SizedBox(
                       width: 64,
                       height: 64,
                       child: icon,
-                  ),
-                  title: title,
-                );
-              },
+                    ),
+                    title: title,
+                  );
+                },
+              ),
             );
           }
           else {
@@ -245,5 +253,16 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     }
 
     setState(() {});
+  }
+
+  void _startSearchDelayTimer() {
+    _searchDelayTimer = Timer(Duration(milliseconds: _delayDuration), () {
+      setState(() {});
+    });
+  }
+
+  void _resetSearchDelayTimer() {
+    _searchDelayTimer?.cancel();
+    _startSearchDelayTimer();
   }
 }
