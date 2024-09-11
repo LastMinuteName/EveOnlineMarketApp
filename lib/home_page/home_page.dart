@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 import 'package:eve_online_market_application/home_page/home_fragment.dart';
 import 'package:eve_online_market_application/home_page/market_fragment.dart';
 import 'package:eve_online_market_application/home_page/more_fragment.dart';

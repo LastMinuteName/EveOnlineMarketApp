@@ -1,12 +1,10 @@
 import 'dart:async';
-
+import 'package:eve_online_market_application/detailed_item_view_page/detailed_item_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../model/database/dbmodel.dart';
-import 'package:path/path.dart';
 import 'package:eve_online_market_application/utils/icon_grabber.dart';
-
 import '../utils/reusable_widgets.dart';
 
 class ItemBrowserPage extends StatefulWidget {
@@ -26,7 +24,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
   ];
 
   bool _isSearching = false;
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
   Timer? _searchDelayTimer;
   final int _delayDuration = 300;
 
@@ -71,6 +69,9 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
       title: TextField(
         autofocus: true,
         controller: _textEditingController,
+        decoration: InputDecoration.collapsed(
+            hintText: AppLocalizations.of(context)!.itemBrowserPageSearchHint
+        ),
         onChanged: (String value) {
           _resetSearchDelayTimer();
         },
@@ -125,11 +126,14 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(30),
-      child: Container(
+      child: SizedBox(
         height: 30,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: listViewContent
+        child: ScrollConfiguration(
+          behavior: const ScrollBehavior(),
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: listViewContent
+          ),
         ),
       )
     );
@@ -199,7 +203,13 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                     case 1:
                       icon = fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0);
                       title = Text(snapshot.data[index]["typeName"]);
-                      onTapCallback = () {};
+                      onTapCallback = () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const DetailedItemViewPage(),
+                          ),
+                        );
+                      };
                     default:
                       throw const FormatException('Unsupported listType');
                   }

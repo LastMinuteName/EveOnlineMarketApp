@@ -26,10 +26,10 @@ class MyApp extends StatelessWidget {
           Widget children;
 
           if (snapshot.hasData) {
-            children = const HomePage();
+
           }
           else {
-            children = const Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -57,7 +57,10 @@ class MyApp extends StatelessWidget {
               GlobalMaterialLocalizations.delegate,
             ],
             supportedLocales: AppLocalizations.supportedLocales,
-            home: children,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => const HomePage()
+            },
           );
         }
       ),

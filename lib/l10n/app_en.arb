@@ -8,5 +8,6 @@
   "homePageMarketTitle":  "Market",
   "homePageMoreTitle":  "More",
 
-  "itemBrowserPageTitle": "Item Browser"
+  "itemBrowserPageTitle": "Item Browser",
+  "itemBrowserPageSearchHint": "Search"
 }

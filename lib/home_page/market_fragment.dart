@@ -1,5 +1,6 @@
 import 'package:eve_online_market_application/item_browser_page/item_browser_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketFragment extends StatefulWidget{
   const MarketFragment({super.key});
@@ -19,7 +20,7 @@ class _MyMarketFragmentState extends State<MarketFragment>{
             height: 64,
             child: Placeholder(),
           ),
-          title: Text("Test"),
+          title: Text(AppLocalizations.of(context)!.itemBrowserPageTitle),
           trailing: Icon(Icons.arrow_right),
           onTap: (){
             Navigator.of(context).push(
@@ -28,15 +29,6 @@ class _MyMarketFragmentState extends State<MarketFragment>{
               ),
             );
           },
-        ),
-        ListTile(
-          leading: SizedBox(
-            width: 64,
-            height: 64,
-            child: Placeholder(),
-          ),
-          title: Text("Test2"),
-          trailing: Icon(Icons.arrow_right),
         ),
       ],
     );
