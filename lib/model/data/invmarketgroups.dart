@@ -1,10 +1,10 @@
 class InvMarketGroups {
   final int marketGroupID;
-  final int parentGroupID;
+  final int? parentGroupID;
   final String marketGroupName;
   final String description;
-  final int iconID;
-  final bool hasTypes;
+  final int? iconID;
+  final int hasTypes;
 
   const InvMarketGroups({
     required this.marketGroupID,

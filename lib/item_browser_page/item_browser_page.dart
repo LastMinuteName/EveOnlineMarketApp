@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:eve_online_market_application/detailed_item_view_page/detailed_item_view_page.dart';
+import 'package:eve_online_market_application/model/data/invmarketgroups.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -15,12 +17,15 @@ class ItemBrowserPage extends StatefulWidget {
 }
 
 class _ItemBrowserPageState extends State<ItemBrowserPage> {
-  List<Map> _itemNavigationPath = [
-    {
-      "marketGroupID": -1,
-      "marketGroupName": "Browse",
-      "hasTypes": 0
-    }
+  List<InvMarketGroups> _itemNavigationPath = [
+    const InvMarketGroups(
+        marketGroupID: -1,
+        parentGroupID: -1,
+        marketGroupName: "Browse",
+        description: "",
+        iconID: -1,
+        hasTypes: 0
+    )
   ];
 
   bool _isSearching = false;
@@ -105,11 +110,11 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                 borderRadius: BorderRadius.zero
               )
             ),
-            onPressed: () {if (i != _itemNavigationPath.length - 1)_backtrackPathTo(_itemNavigationPath[i]["marketGroupID"]); },
+            onPressed: () {if (i != _itemNavigationPath.length - 1) _backtrackPathTo(_itemNavigationPath[i].marketGroupID); },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                _itemNavigationPath[i]["marketGroupName"],
+                _itemNavigationPath[i].marketGroupName,
                 style: const TextStyle(
                   color: Colors.black,
                 ),
@@ -144,7 +149,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
       return _invTypesSearchList(context);
     }
 
-    if (_itemNavigationPath.last["hasTypes"] == 1) {
+    if (_itemNavigationPath.last.hasTypes == 1) {
       return _invTypesList(context);
     }
 
@@ -160,93 +165,87 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
 
   FutureBuilder _invMarketGroupList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last["marketGroupID"]);
+    Future<List<InvMarketGroups>> futureData = dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last.marketGroupID);
 
     return _listBuilder(futureData, 0);
   }
 
   FutureBuilder _invTypesList(BuildContext context) {
     DbModel dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = dbConn.readInvTypesGroup(_itemNavigationPath.last["marketGroupID"].toString());
+    Future<List> futureData = dbConn.readInvTypesGroup(_itemNavigationPath.last.marketGroupID.toString());
 
     return _listBuilder(futureData, 1);
   }
 
   FutureBuilder _listBuilder(Future<List> futureCallback, int listType) {
     return FutureBuilder(
-        future: futureCallback,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          Widget body;
+      future: futureCallback,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget body;
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            body = centeredCircularProgressIndicator();
-            return body;
-          }
-
-          if (snapshot.hasData) {
-            body = ScrollConfiguration(
-              behavior: const ScrollBehavior(),
-              child: ListView.builder(
-                physics: const ClampingScrollPhysics(),
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Image icon;
-                  Text title;
-                  Function onTapCallback;
-
-                  //listType 0 = invMarketGroup | 1 = invTypes | ? = error
-                  switch(listType) {
-                    case 0:
-                      icon = fetchMarketGroupIcon(snapshot.data[index]["iconID"] ?? 0);
-                      title = Text(snapshot.data[index]["marketGroupName"]);
-                      onTapCallback = () {_addPath(snapshot.data[index]);};
-                    case 1:
-                      icon = fetchInvTypeIcon(snapshot.data[index]["typeID"] ?? 0);
-                      title = Text(snapshot.data[index]["typeName"]);
-                      onTapCallback = () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const DetailedItemViewPage(),
-                          ),
-                        );
-                      };
-                    default:
-                      throw const FormatException('Unsupported listType');
-                  }
-
-                  return ListTile(
-                    dense: true,
-                    visualDensity: const VisualDensity(vertical: 4),
-                    onTap: (){onTapCallback();},
-                    leading: SizedBox(
-                      width: 64,
-                      height: 64,
-                      child: icon,
-                    ),
-                    title: title,
-                  );
-                },
-              ),
-            );
-          }
-          else {
-            body = centeredCircularProgressIndicator();
-          }
-
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          body = centeredCircularProgressIndicator();
           return body;
         }
+
+        if (snapshot.hasData) {
+          body = ScrollConfiguration(
+            behavior: const ScrollBehavior(),
+            child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                Image icon;
+                Text title;
+                Function onTapCallback;
+
+                //listType 0 = invMarketGroup | 1 = invTypes | ? = error
+                switch(listType) {
+                  case 0:
+                    icon = fetchMarketGroupIcon(snapshot.data[index].iconID ?? 0);
+                    title = Text(snapshot.data[index].marketGroupName);
+                    onTapCallback = () {_addPath(snapshot.data[index]);};
+                  case 1:
+                    icon = fetchInvTypeIcon(snapshot.data[index].typeID ?? 0);
+                    title = Text(snapshot.data[index].typeName);
+                    onTapCallback = () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DetailedItemViewPage(typeID: snapshot.data[index].typeID),
+                        ),
+                      );
+                    };
+                  default:
+                    throw const FormatException('Unsupported listType');
+                }
+
+                return ListTile(
+                  dense: true,
+                  visualDensity: const VisualDensity(vertical: 4),
+                  onTap: (){onTapCallback();},
+                  leading: SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: icon,
+                  ),
+                  title: title,
+                );
+              },
+            ),
+          );
+        }
+        else {
+          body = centeredCircularProgressIndicator();
+        }
+
+        return body;
+      }
     );
   }
 
-  void _addPath(Map invMarketGroup) {
+  void _addPath(InvMarketGroups invMarketGroup) {
     setState(() {
-      _itemNavigationPath.add(
-        {
-          "marketGroupID": invMarketGroup["marketGroupID"],
-          "marketGroupName": invMarketGroup["marketGroupName"],
-          "hasTypes": invMarketGroup["hasTypes"]
-        }
-      );
+      _itemNavigationPath.add(invMarketGroup);
     });
   }
 
@@ -254,7 +253,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     bool backtracked = false;
 
     while (backtracked == false) {
-      if (_itemNavigationPath.last["marketGroupID"] == marketGroupID) {
+      if (_itemNavigationPath.last.marketGroupID == marketGroupID) {
         backtracked = true;
       }
       else {

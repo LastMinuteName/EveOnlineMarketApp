@@ -1,9 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:eve_online_market_application/model/data/invmarketgroups.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
+import '../data/invTypes.dart';
 
 class DbModel with ChangeNotifier{
   late Database dbConn;
@@ -46,7 +49,7 @@ class DbModel with ChangeNotifier{
     return true;
   }
 
-  Future<List> readInvMarketGroups({int? parentGroupID}) async {
+  Future<List<InvMarketGroups>> readInvMarketGroups({int? parentGroupID}) async {
     String query = "SELECT * FROM invMarketGroups";
     String? conditions;
     Map arguments = {
@@ -80,34 +83,75 @@ class DbModel with ChangeNotifier{
 
     query = "$query $conditions";
 
-    return await dbConn.rawQuery(
+    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
       query,
       queryArguments,
     );
+
+    List<InvMarketGroups> result = List<InvMarketGroups>.generate(queryResult.length, (i) {
+      return InvMarketGroups(
+          marketGroupID: queryResult[i]["marketGroupID"],
+          parentGroupID: queryResult[i]["parentGroupID"],
+          marketGroupName: queryResult[i]["marketGroupName"],
+          description: queryResult[i]["description"],
+          iconID: queryResult[i]["iconID"],
+          hasTypes: queryResult[i]["hasTypes"]
+      );
+    });
+
+    log("test");
+
+    return result;
   }
 
-  Future<List> readInvTypesGroup(String marketGroupID) async {
-    return await dbConn.rawQuery(
+  Future<List<InvTypes>> readInvTypesGroup(String marketGroupID) async {
+    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE marketGroupID = ?',
       [marketGroupID],
     );
+
+    List<InvTypes> result = List<InvTypes>.generate(queryResult.length, (i) {
+      return InvTypes(
+          typeID: queryResult[i]["typeID"],
+          groupID: queryResult[i]["groupID"],
+          typeName: queryResult[i]["typeName"],
+          description: queryResult[i]["description"],
+          raceID: queryResult[i]["raceID"],
+          published: queryResult[i]["published"],
+          marketGroupID: queryResult[i]["marketGroupID"]
+      );
+    });
+
+    return result;
   }
 
   Future<void> readInvTypesByTypeID(int typeId) async {
-    List<Map> result = await dbConn.rawQuery(
+    List<Map<String, Object?>> result = await dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE typeID = ?',
       [typeId],
     );
   }
 
-  Future<List> readInvTypesByTypeName(String typeName) async {
-    List result = await dbConn.rawQuery(
+  Future<List<InvTypes>> readInvTypesByTypeName(String typeName) async {
+    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
       '''
       SELECT * FROM invTypes 
       WHERE typeName LIKE ? AND published=1 AND marketGroupID NOT NULL 
       ORDER BY TypeName ASC''',
       ['%$typeName%'],
     );
+
+    List<InvTypes> result = List<InvTypes>.generate(queryResult.length, (i) {
+      return InvTypes(
+          typeID: queryResult[i]["typeID"],
+          groupID: queryResult[i]["groupID"],
+          typeName: queryResult[i]["typeName"],
+          description: queryResult[i]["description"],
+          raceID: queryResult[i]["raceID"],
+          published: queryResult[i]["published"],
+          marketGroupID: queryResult[i]["marketGroupID"]
+      );
+    });
 
     return result;
   }

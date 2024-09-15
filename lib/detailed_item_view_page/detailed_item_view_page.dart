@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DetailedItemViewPage extends StatefulWidget {
-  const DetailedItemViewPage({super.key});
+  final int typeID;
+  const DetailedItemViewPage({super.key, required this.typeID});
 
   @override
   State<DetailedItemViewPage> createState() => _DetailedItemViewPageState();
@@ -29,6 +30,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
           ),
         ],
       ),
+      body: Text(widget.typeID.toString()),
     );
   }
 }
