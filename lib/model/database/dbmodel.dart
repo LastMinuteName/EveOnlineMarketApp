@@ -99,8 +99,6 @@ class DbModel with ChangeNotifier{
       );
     });
 
-    log("test");
-
     return result;
   }
 
@@ -125,11 +123,23 @@ class DbModel with ChangeNotifier{
     return result;
   }
 
-  Future<void> readInvTypesByTypeID(int typeId) async {
-    List<Map<String, Object?>> result = await dbConn.rawQuery(
+  Future<InvTypes> readInvTypesByTypeID(int typeId) async {
+    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE typeID = ?',
       [typeId],
     );
+
+    InvTypes result = InvTypes(
+      typeID: queryResult[0]["typeID"],
+      groupID: queryResult[0]["groupID"],
+      typeName: queryResult[0]["typeName"],
+      description: queryResult[0]["description"],
+      raceID: queryResult[0]["raceID"],
+      published: queryResult[0]["published"],
+      marketGroupID: queryResult[0]["marketGroupID"]
+    );
+
+    return result;
   }
 
   Future<List<InvTypes>> readInvTypesByTypeName(String typeName) async {
