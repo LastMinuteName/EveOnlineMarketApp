@@ -31,17 +31,21 @@ class _ExpandableTextState extends State<ExpandableText> {
         tp.layout(maxWidth: constraints.maxWidth);
         final numLines = tp.computeLineMetrics().length;
 
-        if (numLines <= 4) {
+        if (numLines <= widget.maxLines) {
           return Align(
             alignment: Alignment.topLeft,
             child: Text(widget.text)
           );
         }
-        else if (numLines > 4 && expanded == false) {
-          return _retractedText();
-        }
         else {
-          return _expandedText();
+          return AnimatedCrossFade(
+            firstCurve: Curves.linear,
+            secondCurve: Curves.linear,
+            firstChild: _retractedText(),
+            secondChild: _expandedText(),
+            crossFadeState: !expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            duration: const Duration(milliseconds: 250),
+          );
         }
 
       }
