@@ -9,5 +9,8 @@
   "homePageMoreTitle":  "More",
 
   "itemBrowserPageTitle": "Item Browser",
-  "itemBrowserPageSearchHint": "Search"
+  "itemBrowserPageSearchHint": "Search",
+
+  "expandableTextReadMoreButton": "Read More",
+  "expandableTextReadLessButton": "Read Less"
 }

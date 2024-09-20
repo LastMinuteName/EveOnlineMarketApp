@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ExpandableText extends StatefulWidget {
   final String text;
@@ -33,9 +34,14 @@ class _ExpandableTextState extends State<ExpandableText> {
     return Column(
       children: [
         Text(widget.text),
-        TextButton(
-          onPressed: () { setState(() => expanded = !expanded );},
-          child: Text("Read Less"),
+        GestureDetector(
+          onTap: () { setState(() => expanded = !expanded );},
+          child: Text(
+            AppLocalizations.of(context)!.expandableTextReadLessButton,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );
@@ -49,9 +55,14 @@ class _ExpandableTextState extends State<ExpandableText> {
           maxLines: widget.maxLines,
           overflow: widget.overflow,
         ),
-        TextButton(
-          onPressed: () { setState(() => expanded = !expanded );},
-          child: Text("Read More"),
+        GestureDetector(
+          onTap: () { setState(() => expanded = !expanded );},
+          child: Text(
+            AppLocalizations.of(context)!.expandableTextReadMoreButton,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );
