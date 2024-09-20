@@ -129,11 +129,13 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   }
 
   Widget _description() {
-    return ExpandableText(
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+      child: ExpandableText(
         text: item!.description,
         maxLines: 4,
         overflow: TextOverflow.fade,
-        padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+      )
     );
   }
 

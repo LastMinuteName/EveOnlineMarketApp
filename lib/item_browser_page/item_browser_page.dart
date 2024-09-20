@@ -274,4 +274,12 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     _searchDelayTimer?.cancel();
     _startSearchDelayTimer();
   }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    _searchDelayTimer?.cancel();
+
+    super.dispose();
+  }
 }

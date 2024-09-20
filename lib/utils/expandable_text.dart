@@ -5,14 +5,14 @@ class ExpandableText extends StatefulWidget {
   final String text;
   final int maxLines;
   final TextOverflow overflow;
-  final EdgeInsets? padding;
+  final TextStyle? textStyle;
 
   const ExpandableText({
     super.key,
     required this.text,
     required this.maxLines,
     required this.overflow,
-    this.padding
+    this.textStyle
   });
 
   @override
@@ -24,47 +24,79 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: widget.padding ?? widget.padding,
-      child: expanded ? _expandedText() : _retractedText()
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final span = TextSpan(text: widget.text, style: widget.textStyle ?? const TextStyle());
+        final tp = TextPainter(text: span, textDirection: TextDirection.ltr);
+        tp.layout(maxWidth: constraints.maxWidth);
+        final numLines = tp.computeLineMetrics().length;
+
+        if (numLines <= 4) {
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Text(widget.text)
+          );
+        }
+        else if (numLines > 4 && expanded == false) {
+          return _retractedText();
+        }
+        else {
+          return _expandedText();
+        }
+
+      }
     );
   }
 
   Widget _expandedText() {
-    return Column(
-      children: [
-        Text(widget.text),
-        GestureDetector(
-          onTap: () { setState(() => expanded = !expanded );},
-          child: Text(
-            AppLocalizations.of(context)!.expandableTextReadLessButton,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () { setState(() => expanded = !expanded );},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.text,
+            style: widget.textStyle,
+          ),
+          Container(
+            color: Colors.transparent,
+            alignment: Alignment.center,
+            child: Text(
+              AppLocalizations.of(context)!.expandableTextReadLessButton,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _retractedText() {
-    return Column(
-      children: [
-        Text(
-          widget.text,
-          maxLines: widget.maxLines,
-          overflow: widget.overflow,
-        ),
-        GestureDetector(
-          onTap: () { setState(() => expanded = !expanded );},
-          child: Text(
-            AppLocalizations.of(context)!.expandableTextReadMoreButton,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () { setState(() => expanded = !expanded );},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.text,
+            maxLines: widget.maxLines,
+            overflow: widget.overflow,
+            style: widget.textStyle,
+          ),
+          Container(
+            color: Colors.transparent,
+            alignment: Alignment.center,
+            child: Text(
+              AppLocalizations.of(context)!.expandableTextReadMoreButton,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
