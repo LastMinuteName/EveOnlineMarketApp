@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:eve_online_market_application/model/data/invmarketgroups.dart';
+import 'package:eve_online_market_application/model/entity/invmarketgroups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../data/invTypes.dart';
+import '../entity/inv_types.dart';
 
 class DbModel with ChangeNotifier{
   late Database dbConn;

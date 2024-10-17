@@ -1,11 +1,12 @@
+import 'package:eve_online_market_application/pages/detailed_item_view_page/market_averages_section.dart';
 import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import '../model/data/invTypes.dart';
-import '../utils/icon_grabber.dart';
-import '../utils/reusable_widgets.dart';
-import '../model/database/dbmodel.dart';
+import '../../model/entity/inv_types.dart';
+import '../../utils/icon_grabber.dart';
+import '../../utils/reusable_widgets.dart';
+import '../../model/database/dbmodel.dart';
 
 class DetailedItemViewPage extends StatefulWidget {
   final int typeID;
@@ -28,7 +29,6 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
             },
             icon: const Icon(Icons.arrow_back)
         ),
-        title: Text(AppLocalizations.of(context)!.itemBrowserPageTitle),
         actions: [
           IconButton(
               onPressed: (){
@@ -56,15 +56,20 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
           item = snapshot.data;
 
           return SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 8.0),
-                _titleCard(),
-                const SizedBox(height: 8.0),
-                _actionSegment(),
-                const SizedBox(height: 8.0),
-                _description(),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  _titleCard(),
+                  const SizedBox(height: 8.0),
+                  _actionSegment(),
+                  const SizedBox(height: 8.0),
+                  _description(),
+                  const SizedBox(height: 16.0),
+                  MarketAveragesSection(typeID: widget.typeID),
+                ],
+              ),
             ),
           );
         }
@@ -78,24 +83,23 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   }
 
   Widget _titleCard() {
-    Widget titleCard = Container(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-      child: Row(
-        children: [
-          SizedBox(
-            height: 128,
-            width: 128,
-            child: fetchInvTypeIcon(item!.typeID),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              item!.typeName,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+    Widget titleCard = Row(
+      children: [
+        SizedBox(
+          height: 128,
+          width: 128,
+          child: fetchInvTypeIcon(item!.typeID),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            item!.typeName,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold
             ),
           ),
-        ],
-      )
+        ),
+      ],
     );
     return titleCard;
   }
@@ -129,18 +133,11 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   }
 
   Widget _description() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-      child: ExpandableText(
-        text: item!.description,
-        maxLines: 4,
-        overflow: TextOverflow.fade,
-      )
+    return ExpandableText(
+      text: item!.description,
+      maxLines: 4,
+      overflow: TextOverflow.fade,
     );
-  }
-
-  Widget _marketAverages() {
-    return Placeholder();
   }
 
   Widget _buySellOrders() {

@@ -1,10 +1,11 @@
+import 'package:eve_online_market_application/model/web_calls/eve_esi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:eve_online_market_application/home_page/home_fragment.dart';
-import 'package:eve_online_market_application/home_page/market_fragment.dart';
-import 'package:eve_online_market_application/home_page/more_fragment.dart';
+import 'package:eve_online_market_application/pages/home_page/home_fragment.dart';
+import 'package:eve_online_market_application/pages/home_page/market_fragment.dart';
+import 'package:eve_online_market_application/pages/home_page/more_fragment.dart';
 
-import '../model/database/dbmodel.dart';
+import '../../model/database/dbmodel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,9 +55,9 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: [
-        HomeFragment(),
-        MarketFragment(),
-        MoreFragment(),
+        const HomeFragment(),
+        const MarketFragment(),
+        const MoreFragment(),
       ][currentPageIndex],
     );
   }

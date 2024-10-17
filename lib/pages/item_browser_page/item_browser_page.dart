@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:eve_online_market_application/detailed_item_view_page/detailed_item_view_page.dart';
-import 'package:eve_online_market_application/model/data/invmarketgroups.dart';
+import 'package:eve_online_market_application/pages/detailed_item_view_page/detailed_item_view_page.dart';
+import 'package:eve_online_market_application/model/entity/invmarketgroups.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../model/database/dbmodel.dart';
+import '../../model/database/dbmodel.dart';
 import 'package:eve_online_market_application/utils/icon_grabber.dart';
-import '../utils/reusable_widgets.dart';
+import '../../utils/reusable_widgets.dart';
 
 class ItemBrowserPage extends StatefulWidget {
   const ItemBrowserPage({super.key});
@@ -115,9 +115,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 _itemNavigationPath[i].marketGroupName,
-                style: const TextStyle(
-                  color: Colors.black,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
               )
             )
           )

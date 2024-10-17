@@ -1,4 +1,4 @@
-import 'package:eve_online_market_application/item_browser_page/item_browser_page.dart';
+import 'package:eve_online_market_application/pages/item_browser_page/item_browser_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
