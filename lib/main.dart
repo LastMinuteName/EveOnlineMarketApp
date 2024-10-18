@@ -2,6 +2,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'app_themes.dart';
 import 'pages/home_page/home_page.dart';
 import 'model/database/dbmodel.dart';
 
@@ -48,10 +49,10 @@ class MyApp extends StatelessWidget {
           }
 
           return MaterialApp(
-            theme: ThemeData(
+            theme: customTheme(
               brightness: Brightness.light,
             ),
-            darkTheme: ThemeData(
+            darkTheme: customTheme(
               brightness: Brightness.dark,
             ),
             themeMode: ThemeMode.system,

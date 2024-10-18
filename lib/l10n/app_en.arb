@@ -12,5 +12,9 @@
   "itemBrowserPageSearchHint": "Search",
 
   "expandableTextReadMoreButton": "Read More",
-  "expandableTextReadLessButton": "Read Less"
+  "expandableTextReadLessButton": "Read Less",
+
+  "labelLowest": "Lowest",
+  "labelAverage": "Average",
+  "labelHighest": "Highest"
 }

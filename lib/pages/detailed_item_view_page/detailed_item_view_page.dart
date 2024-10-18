@@ -3,6 +3,7 @@ import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import '../../app_themes.dart';
 import '../../model/entity/inv_types.dart';
 import '../../utils/icon_grabber.dart';
 import '../../utils/reusable_widgets.dart';
@@ -83,6 +84,8 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   }
 
   Widget _titleCard() {
+    CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
+
     Widget titleCard = Row(
       children: [
         SizedBox(
@@ -95,7 +98,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
           child: Text(
             item!.typeName,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
