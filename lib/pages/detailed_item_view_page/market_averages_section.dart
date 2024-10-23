@@ -71,9 +71,6 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
         if (snapshot.hasData) {
           List<MarketHistory> marketHistoryData = snapshot.data;
 
-          print(marketHistoryData.last.toString());
-          print(marketHistoryData[marketHistoryData.length - 2].toString());
-
           if (marketHistoryData.isEmpty) {
             return Text('There is no historical market data for this item');
           }
@@ -106,13 +103,29 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if(element["price"] != null) Text(
-                    element["percentageChange"].toStringAsFixed(2),
-                    style: TextStyle(
-                      color: element["percentageChange"] > 0 ?
-                        Theme.of(context).extension<CustomTheme>()?.valueIncrease :
-                        Theme.of(context).extension<CustomTheme>()?.valueDecrease
-                    ),
+                  if(element["price"] != null) Text.rich(
+                    TextSpan(
+                      style: TextStyle(
+                        color: element["percentageChange"] > 0 ?
+                          Theme.of(context).extension<CustomTheme>()?.valueIncrease :
+                          Theme.of(context).extension<CustomTheme>()?.valueDecrease
+                      ),
+                      children: [
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: element["percentageChange"] > 0 ?
+                          Icon(
+                            Icons.arrow_upward,
+                            color: Theme.of(context).extension<CustomTheme>()?.valueIncrease,
+                          ) :
+                          Icon(
+                            Icons.arrow_downward,
+                            color: Theme.of(context).extension<CustomTheme>()?.valueDecrease,
+                          ),
+                        ),
+                        TextSpan(text: "${element["percentageChange"].toStringAsFixed(2)}%"),
+                      ]
+                    )
                   ),
                   element["price"] == null ? const CircularProgressIndicator() : Text(element["price"]!),
                 ],
