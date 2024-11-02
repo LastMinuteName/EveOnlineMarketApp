@@ -1,7 +1,6 @@
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_averages_section.dart';
 import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../app_themes.dart';
 import '../../model/entity/inv_types.dart';
@@ -113,7 +112,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
       children: [
         TextButton(
           onPressed: () {  },
-          child: Column(
+          child: const Column(
             children: [
               Icon(Icons.favorite_outline),
               Text("Watchlist"),
@@ -122,7 +121,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
         ),
         TextButton(
           onPressed: () {  },
-          child: Column(
+          child: const Column(
             children: [
               Icon(Icons.favorite),
               Text("Watchlist"),
@@ -144,7 +143,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   }
 
   Widget _buySellOrders() {
-    return Placeholder();
+    return const Placeholder();
   }
 
 

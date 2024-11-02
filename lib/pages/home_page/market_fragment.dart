@@ -15,13 +15,13 @@ class _MyMarketFragmentState extends State<MarketFragment>{
     return ListView(
       children: [
         ListTile(
-          leading: SizedBox(
+          leading: const SizedBox(
             width: 64,
             height: 64,
             child: Placeholder(),
           ),
           title: Text(AppLocalizations.of(context)!.itemBrowserPageTitle),
-          trailing: Icon(Icons.arrow_right),
+          trailing: const Icon(Icons.arrow_right),
           onTap: (){
             Navigator.of(context).push(
               MaterialPageRoute(

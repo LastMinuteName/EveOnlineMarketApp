@@ -1,11 +1,11 @@
 //File contains an assortment of functions to get data from the eve ESI endpoint
 
 import 'dart:convert';
-import 'dart:developer';
 import 'package:eve_online_market_application/model/entity/market_history.dart';
 import 'package:http/http.dart' as http;
+import '../entity/market_order.dart';
 
-Future<List<MarketHistory>> getMarketHistory({int? typeID, int? regionID}) async {
+Future<List<MarketHistory>> getMarketHistory({required int typeID, required int regionID}) async {
   final response = await http.get(Uri.parse('https://esi.evetech.net/latest/markets/$regionID/history/?type_id=$typeID'));
   List<MarketHistory> result = [];
 

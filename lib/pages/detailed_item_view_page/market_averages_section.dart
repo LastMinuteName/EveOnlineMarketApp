@@ -39,20 +39,21 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
           ),
         ),
         const SizedBox(height: 8.0),
-        marketHistoryLatest(),
+        marketHistoryLatestSection(),
+        const SizedBox(height: 8.0),
+        fivePercentAverageSection(),
       ],
     );
   }
 
-  Widget marketHistoryLatest() {
+  Widget marketHistoryLatestSection() {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
-    return FutureBuilder(
+    Widget body = FutureBuilder(
       future: _marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        AppLocalizations? appLocalizations = AppLocalizations.of(context);
-
-        List<Map<String, dynamic?>> latestMarketHistory = [
+        List<Map<String, dynamic>> latestMarketHistory = [
           {
             "label": appLocalizations?.labelLowest,
             "price": null,
@@ -72,7 +73,7 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
           List<MarketHistory> marketHistoryData = snapshot.data;
 
           if (marketHistoryData.isEmpty) {
-            return Text('There is no historical market data for this item');
+            return Text(appLocalizations!.noMarketHistory);
           }
           else {
             latestMarketHistory[0]["price"] = toCommaSeparated(marketHistoryData.last.lowest);
@@ -80,9 +81,9 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
             latestMarketHistory[2]["price"] = toCommaSeparated(marketHistoryData.last.highest);
 
             if (marketHistoryData.length > 1) {
-              latestMarketHistory[0]["percentageChange"] = percentageChange(marketHistoryData[marketHistoryData.length - 2].lowest, marketHistoryData.last.lowest);
-              latestMarketHistory[1]["percentageChange"] = percentageChange(marketHistoryData[marketHistoryData.length - 2].average, marketHistoryData.last.average);
-              latestMarketHistory[2]["percentageChange"] = percentageChange(marketHistoryData[marketHistoryData.length - 2].highest, marketHistoryData.last.highest);
+              latestMarketHistory[0]["percentageChange"] = calculatePercentageChange(marketHistoryData[marketHistoryData.length - 2].lowest, marketHistoryData.last.lowest);
+              latestMarketHistory[1]["percentageChange"] = calculatePercentageChange(marketHistoryData[marketHistoryData.length - 2].average, marketHistoryData.last.average);
+              latestMarketHistory[2]["percentageChange"] = calculatePercentageChange(marketHistoryData[marketHistoryData.length - 2].highest, marketHistoryData.last.highest);
             }
           }
         }
@@ -134,6 +135,45 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
           )
         );
       }
+    );
+
+    return Column(
+      children: [
+        Text(
+          appLocalizations!.marketHistory,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        body
+      ],
+    );
+  }
+
+  Widget fivePercentAverageSection() {
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
+
+    Widget body = const SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.spaceEvenly,
+        children: [
+          Text("Buy"),
+          Text("Sell")
+        ]
+      ),
+    );
+
+    return Column(
+      children: [
+        Text(
+          appLocalizations!.currentPricesFivePercent,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        body,
+      ],
     );
   }
 }

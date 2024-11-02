@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/detailed_item_view_page.dart';
-import 'package:eve_online_market_application/model/entity/invmarketgroups.dart';
+import 'package:eve_online_market_application/model/entity/inv_market_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,7 +16,7 @@ class ItemBrowserPage extends StatefulWidget {
 }
 
 class _ItemBrowserPageState extends State<ItemBrowserPage> {
-  List<InvMarketGroups> _itemNavigationPath = [
+  final List<InvMarketGroups> _itemNavigationPath = [
     const InvMarketGroups(
         marketGroupID: -1,
         parentGroupID: -1,

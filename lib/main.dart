@@ -13,8 +13,8 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  //create all models that need to be passed
-  //down to children to be used throughout the application
+  /// create all models that need to be passed
+  /// down to children to be used throughout the application
   DbModel dbModel = DbModel();
 
   @override
