@@ -6,6 +6,8 @@ import 'package:eve_online_market_application/model/web_calls/eve_esi.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../app_themes.dart';
 import '../../constants/enums/eve_regions_market.dart';
+import '../../model/entity/market_stats.dart';
+import '../../model/web_calls/evetycoon.dart';
 
 
 
@@ -19,10 +21,12 @@ class MarketAveragesSection extends StatefulWidget {
 
 class _MarketAveragesSection extends State<MarketAveragesSection> {
   late Future _marketHistoryFuture;
+  late Future _marketStatsFuture;
 
   @override
   initState() {
     _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
+    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
   }
 
   @override
@@ -55,16 +59,16 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List<Map<String, dynamic>> latestMarketHistory = [
           {
-            "label": appLocalizations?.labelLowest,
+            "label": appLocalizations!.labelLowest,
             "price": null,
 
           },
           {
-            "label": appLocalizations?.labelAverage,
+            "label": appLocalizations!.labelAverage,
             "price": null,
           },
           {
-            "label": appLocalizations?.labelHighest,
+            "label": appLocalizations!.labelHighest,
             "price": null,
           }
         ];
@@ -117,11 +121,11 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
                           child: element["percentageChange"] > 0 ?
                           Icon(
                             Icons.arrow_upward,
-                            color: Theme.of(context).extension<CustomTheme>()?.valueIncrease,
+                            color: customTheme?.valueIncrease,
                           ) :
                           Icon(
                             Icons.arrow_downward,
-                            color: Theme.of(context).extension<CustomTheme>()?.valueDecrease,
+                            color: customTheme?.valueDecrease,
                           ),
                         ),
                         TextSpan(text: "${element["percentageChange"].toStringAsFixed(2)}%"),
@@ -153,15 +157,52 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
   Widget fivePercentAverageSection() {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
-    Widget body = const SizedBox(
-      width: double.infinity,
-      child: Wrap(
-        alignment: WrapAlignment.spaceEvenly,
-        children: [
-          Text("Buy"),
-          Text("Sell")
-        ]
-      ),
+    Widget body = FutureBuilder(
+      future: _marketStatsFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Text? buyAvg;
+        Text? sellAvg;
+
+        if(snapshot.hasData) {
+          MarketStats marketStatsData = snapshot.data;
+          buyAvg = Text(toCommaSeparated(marketStatsData.buyAvgFivePercent));
+          sellAvg = Text(toCommaSeparated(marketStatsData.sellAvgFivePercent));
+        }
+        else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+
+        return SizedBox(
+          width: double.infinity,
+          child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      appLocalizations!.buy,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    buyAvg ?? const CircularProgressIndicator(),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      appLocalizations!.sell,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    sellAvg ?? const CircularProgressIndicator(),
+                  ],
+                ),
+              ]
+          ),
+        );
+      }
     );
 
     return Column(

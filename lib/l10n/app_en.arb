@@ -19,5 +19,7 @@
   "labelHighest": "Highest",
   "marketHistory": "Market History",
   "currentPricesFivePercent": "Current prices (5% average)",
-  "noMarketHistory": "There is no historical market data for this item"
+  "noMarketHistory": "There is no historical market data for this item",
+  "buy": "Buy",
+  "sell": "Sell"
 }
