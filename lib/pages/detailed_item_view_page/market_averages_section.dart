@@ -12,23 +12,15 @@ import '../../model/web_calls/evetycoon.dart';
 
 
 class MarketAveragesSection extends StatefulWidget {
-  final int typeID;
-  const MarketAveragesSection({super.key, required this.typeID});
+  final Future marketHistoryFuture;
+  final Future marketStatsFuture;
+  const MarketAveragesSection({super.key, required this.marketHistoryFuture, required this.marketStatsFuture});
 
   @override
   State<MarketAveragesSection> createState() => _MarketAveragesSection();
 }
 
 class _MarketAveragesSection extends State<MarketAveragesSection> {
-  late Future _marketHistoryFuture;
-  late Future _marketStatsFuture;
-
-  @override
-  initState() {
-    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
-    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
-  }
-
   @override
   Widget build(BuildContext context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
@@ -55,7 +47,7 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: _marketHistoryFuture,
+      future: widget.marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List<Map<String, dynamic>> latestMarketHistory = [
           {
@@ -158,7 +150,7 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: _marketStatsFuture,
+      future: widget.marketStatsFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Text? buyAvg;
         Text? sellAvg;

@@ -3,7 +3,10 @@ import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app_themes.dart';
+import '../../constants/enums/eve_regions_market.dart';
 import '../../model/entity/inv_types.dart';
+import '../../model/web_calls/eve_esi.dart';
+import '../../model/web_calls/evetycoon.dart';
 import '../../utils/icon_grabber.dart';
 import '../../utils/reusable_widgets.dart';
 import '../../model/database/dbmodel.dart';
@@ -18,6 +21,14 @@ class DetailedItemViewPage extends StatefulWidget {
 
 class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   InvTypes? item;
+  late Future _marketHistoryFuture;
+  late Future _marketStatsFuture;
+
+  @override
+  initState() {
+    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
+    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +78,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                   const SizedBox(height: 8.0),
                   _description(),
                   const SizedBox(height: 16.0),
-                  MarketAveragesSection(typeID: widget.typeID),
+                  MarketAveragesSection(marketHistoryFuture: _marketHistoryFuture, marketStatsFuture: _marketStatsFuture),
                 ],
               ),
             ),
