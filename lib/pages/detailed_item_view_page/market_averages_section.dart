@@ -2,25 +2,18 @@ import 'package:eve_online_market_application/model/entity/market_history.dart';
 import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:eve_online_market_application/utils/math.dart';
 import 'package:flutter/material.dart';
-import 'package:eve_online_market_application/model/web_calls/eve_esi.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:path/path.dart';
 import '../../app_themes.dart';
-import '../../constants/enums/eve_regions_market.dart';
 import '../../model/entity/market_stats.dart';
-import '../../model/web_calls/evetycoon.dart';
 
 
 
-class MarketAveragesSection extends StatefulWidget {
+class MarketAveragesSection extends StatelessWidget {
   final Future marketHistoryFuture;
   final Future marketStatsFuture;
   const MarketAveragesSection({super.key, required this.marketHistoryFuture, required this.marketStatsFuture});
 
-  @override
-  State<MarketAveragesSection> createState() => _MarketAveragesSection();
-}
-
-class _MarketAveragesSection extends State<MarketAveragesSection> {
   @override
   Widget build(BuildContext context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
@@ -35,19 +28,19 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
           ),
         ),
         const SizedBox(height: 8.0),
-        marketHistoryLatestSection(),
+        marketHistoryLatestSection(context),
         const SizedBox(height: 8.0),
-        fivePercentAverageSection(),
+        fivePercentAverageSection(context),
       ],
     );
   }
 
-  Widget marketHistoryLatestSection() {
+  Widget marketHistoryLatestSection(context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: widget.marketHistoryFuture,
+      future: marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List<Map<String, dynamic>> latestMarketHistory = [
           {
@@ -146,11 +139,11 @@ class _MarketAveragesSection extends State<MarketAveragesSection> {
     );
   }
 
-  Widget fivePercentAverageSection() {
+  Widget fivePercentAverageSection(context) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: widget.marketStatsFuture,
+      future: marketStatsFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Text? buyAvg;
         Text? sellAvg;
