@@ -38,7 +38,10 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
     return FutureBuilder(
       future: widget.marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        List<MarketHistory>? marketHistory = snapshot.hasData ? snapshot.data : null;
+        var flSpotData, marketHistory;
+        if (snapshot.hasData) {
+          (flSpotData, marketHistory) = marketHistoryToLineChartData(snapshot.data);
+        }
 
         return AspectRatio(
           aspectRatio: 4/3,
@@ -65,36 +68,13 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
               borderData: FlBorderData(
                 show: true,
               ),
-              titlesData: const FlTitlesData(
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: false,
-                  ),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    reservedSize: 40,
-                    showTitles: false,
-                  ),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: false,
-                  ),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    reservedSize: 40,
-                    showTitles: false,
-                  ),
-                ),
-              ),
+              titlesData: const FlTitlesData(show: false),
               gridData: const FlGridData(
                 show: false,
               ),
               lineBarsData: [
                 LineChartBarData(
-                  spots: snapshot.hasData ? marketHistoryToLineChartData(snapshot.data) : [],
+                  spots: snapshot.hasData ? flSpotData : [],
                   dotData: const FlDotData(
                     show: false,
                   ),
@@ -132,8 +112,9 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
     );
   }
 
-  List<FlSpot> marketHistoryToLineChartData(List<MarketHistory> data) {
+  (List<FlSpot>, List<MarketHistory>) marketHistoryToLineChartData(List<MarketHistory> data) {
     List<FlSpot> marketHistoryFlSpot = [];
+    List<MarketHistory> marketHistory = [];
     int selectedTimeframeIndex = 4;
     DateTime timeframeForComparison;
 
@@ -146,7 +127,8 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
     timeframeForComparison = data.last.date.subtract(Duration(days: timeframeDiff[selectedTimeframeIndex]));
 
     for(int i = 0; i < data.length; i++) {
-      if (data[i].date.millisecondsSinceEpoch > timeframeForComparison.millisecondsSinceEpoch) {
+      if (data[i].date.millisecondsSinceEpoch >= timeframeForComparison.millisecondsSinceEpoch) {
+        marketHistory.add(data[i]);
         marketHistoryFlSpot.add(
           FlSpot(
             data[i].date.millisecondsSinceEpoch.toDouble(),
@@ -156,6 +138,6 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
       }
     }
 
-    return marketHistoryFlSpot;
+    return (marketHistoryFlSpot, marketHistory);
   }
 }
