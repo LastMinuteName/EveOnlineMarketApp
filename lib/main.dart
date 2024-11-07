@@ -27,46 +27,46 @@ class MyApp extends StatelessWidget {
           Widget children;
 
           if (snapshot.hasData) {
-
+            return MaterialApp(
+              theme: customTheme(
+                brightness: Brightness.light,
+              ),
+              darkTheme: customTheme(
+                brightness: Brightness.dark,
+              ),
+              themeMode: ThemeMode.system,
+              title: 'Localizations Sample App',
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const HomePage()
+              },
+            );
           }
           else {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: CircularProgressIndicator(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text("Opening Application"),
-                  ),
-                ],
+            return const SizedBox(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text("Opening Application", textDirection: TextDirection.ltr),
+                    ),
+                  ],
+                ),
               ),
             );
           }
-
-          return MaterialApp(
-            theme: customTheme(
-              brightness: Brightness.light,
-            ),
-            darkTheme: customTheme(
-              brightness: Brightness.dark,
-            ),
-            themeMode: ThemeMode.system,
-            title: 'Localizations Sample App',
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            initialRoute: '/',
-            routes: {
-              '/': (context) => const HomePage()
-            },
-          );
         }
       ),
     );
