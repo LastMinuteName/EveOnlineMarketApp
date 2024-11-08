@@ -14,12 +14,17 @@
   "expandableTextReadMoreButton": "Read More",
   "expandableTextReadLessButton": "Read Less",
 
+  "marketAveragesTitle": "Market Averages",
   "labelLowest": "Lowest",
   "labelAverage": "Average",
   "labelHighest": "Highest",
   "marketHistory": "Market History",
   "currentPricesFivePercent": "Current prices (5% average)",
   "noMarketHistory": "There is no historical market data for this item",
-  "buy": "Buy",
-  "sell": "Sell"
+  "labelBuy": "Buy",
+  "labelSell": "Sell",
+  "timeframeWeek": "Week",
+  "timeframeMonth": "Month",
+  "timeframeYear": "Year",
+  "timeframeAll": "All"
 }

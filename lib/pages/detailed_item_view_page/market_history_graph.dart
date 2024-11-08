@@ -23,6 +23,7 @@ class MarketHistoryGraph extends StatefulWidget {
 
 class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
   final List<bool> _selectedTimeframe = <bool>[true, false, false, false];
+  int _selectedTimeframeIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,8 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
     return FutureBuilder(
       future: widget.marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        var flSpotData, marketHistory;
+        List<FlSpot> flSpotData = [];
+        List<MarketHistory>marketHistory = [];
         if (snapshot.hasData) {
           (flSpotData, marketHistory) = marketHistoryToLineChartData(snapshot.data);
         }
@@ -58,7 +60,7 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
                           Theme.of(context).textTheme.bodySmall!,
                           children: [
                             TextSpan(text: '${toCommaSeparated(marketHistory![touchedSpot.spotIndex].average)}\n'),
-                            TextSpan(text: DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)),
+                            TextSpan(text: '${DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)}'),
                           ]
                       );
                     }).toList();
@@ -92,10 +94,10 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
   Widget timeFrameSelector() {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
     List<Widget> timeframes = [
-      Text("Week"),
-      Text("Month"),
-      Text("Year"),
-      Text("All"),
+      Text(appLocalizations!.timeframeWeek),
+      Text(appLocalizations!.timeframeMonth),
+      Text(appLocalizations!.timeframeYear),
+      Text(appLocalizations!.timeframeAll),
     ];
 
     return ToggleButtons(
@@ -104,6 +106,7 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
         setState(() {
           for(int i = 0; i < _selectedTimeframe.length; i++) {
             _selectedTimeframe[i] = i == index;
+            if (i == index) _selectedTimeframeIndex = i;
           }
         });
       },
@@ -115,19 +118,14 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
   (List<FlSpot>, List<MarketHistory>) marketHistoryToLineChartData(List<MarketHistory> data) {
     List<FlSpot> marketHistoryFlSpot = [];
     List<MarketHistory> marketHistory = [];
-    int selectedTimeframeIndex = 4;
-    DateTime timeframeForComparison;
+    DateTime? timeframeForComparison;
 
-    for(int i = 0; i < _selectedTimeframe.length; i++) {
-      if(_selectedTimeframe[i] == true) {
-        selectedTimeframeIndex = i;
-      }
+    if (data.isNotEmpty) {
+      timeframeForComparison = data.last.date.subtract(Duration(days: timeframeDiff[_selectedTimeframeIndex]));
     }
 
-    timeframeForComparison = data.last.date.subtract(Duration(days: timeframeDiff[selectedTimeframeIndex]));
-
     for(int i = 0; i < data.length; i++) {
-      if (data[i].date.millisecondsSinceEpoch >= timeframeForComparison.millisecondsSinceEpoch) {
+      if (data[i].date.millisecondsSinceEpoch > timeframeForComparison!.millisecondsSinceEpoch) {
         marketHistory.add(data[i]);
         marketHistoryFlSpot.add(
           FlSpot(

@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path/path.dart';
 import '../../app_themes.dart';
 import '../../model/entity/market_stats.dart';
+import 'market_history_graph.dart';
 
 
 
@@ -17,12 +18,13 @@ class MarketAveragesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Market Averages",
+          appLocalizations!.marketAveragesTitle,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -31,6 +33,8 @@ class MarketAveragesSection extends StatelessWidget {
         marketHistoryLatestSection(context),
         const SizedBox(height: 8.0),
         fivePercentAverageSection(context),
+        const SizedBox(height: 8.0),
+        MarketHistoryGraph(marketHistoryFuture: marketHistoryFuture),
       ],
     );
   }
@@ -62,7 +66,11 @@ class MarketAveragesSection extends StatelessWidget {
           List<MarketHistory> marketHistoryData = snapshot.data;
 
           if (marketHistoryData.isEmpty) {
-            return Text(appLocalizations!.noMarketHistory);
+            return Container(
+              alignment: Alignment.center,
+              width: double.infinity,
+              child: Text(appLocalizations!.noMarketHistory),
+            );
           }
           else {
             latestMarketHistory[0]["price"] = toCommaSeparated(marketHistoryData.last.lowest);
@@ -165,7 +173,7 @@ class MarketAveragesSection extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      appLocalizations!.buy,
+                      appLocalizations!.labelBuy,
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -176,7 +184,7 @@ class MarketAveragesSection extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      appLocalizations!.sell,
+                      appLocalizations!.labelSell,
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

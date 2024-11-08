@@ -83,8 +83,6 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                     marketHistoryFuture: _marketHistoryFuture,
                     marketStatsFuture: _marketStatsFuture
                   ),
-                  const SizedBox(height: 8.0),
-                  MarketHistoryGraph(marketHistoryFuture: _marketHistoryFuture),
                 ],
               ),
             ),
