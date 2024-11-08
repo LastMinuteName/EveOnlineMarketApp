@@ -1,5 +1,6 @@
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_averages_section.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_history_graph.dart';
+import 'package:eve_online_market_application/pages/detailed_item_view_page/market_orders_section.dart';
 import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,8 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                     marketHistoryFuture: _marketHistoryFuture,
                     marketStatsFuture: _marketStatsFuture
                   ),
+                  const SizedBox(height: 8.0),
+                  MarketOrdersSection(),
                 ],
               ),
             ),
