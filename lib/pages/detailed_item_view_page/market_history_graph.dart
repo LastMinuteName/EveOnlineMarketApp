@@ -41,18 +41,23 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List<FlSpot> flSpotData = [];
         List<MarketHistory>marketHistory = [];
+        double maxAvg = 0;
+        double minAvg = 0;
+
         if (snapshot.hasData) {
-          (flSpotData, marketHistory) = marketHistoryToLineChartData(snapshot.data);
+          (flSpotData, marketHistory, maxAvg, minAvg) = marketHistoryToLineChartData(snapshot.data);
         }
 
         return AspectRatio(
           aspectRatio: 4/3,
           child: LineChart(
             LineChartData(
+              maxY: maxAvg * 1.01,
+              minY: minAvg * 0.99,
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
                   fitInsideHorizontally: true,
-                  fitInsideVertically: true,
+                  fitInsideVertically: false,
                   getTooltipItems: (touchedSpots) {
                     return touchedSpots.map((LineBarSpot touchedSpot) {
                       return LineTooltipItem(
@@ -115,9 +120,10 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
     );
   }
 
-  (List<FlSpot>, List<MarketHistory>) marketHistoryToLineChartData(List<MarketHistory> data) {
+  (List<FlSpot>, List<MarketHistory>, double, double) marketHistoryToLineChartData(List<MarketHistory> data) {
     List<FlSpot> marketHistoryFlSpot = [];
     List<MarketHistory> marketHistory = [];
+    double maxAvg = 0, minAvg = double.infinity;
     DateTime? timeframeForComparison;
 
     if (data.isNotEmpty) {
@@ -133,9 +139,11 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
             data[i].average
           )
         );
+        maxAvg = data[i].average > maxAvg ? data[i].average : maxAvg;
+        minAvg = data[i].average < minAvg ? data[i].average : minAvg;
       }
     }
 
-    return (marketHistoryFlSpot, marketHistory);
+    return (marketHistoryFlSpot, marketHistory, maxAvg, minAvg);
   }
 }
