@@ -147,6 +147,35 @@ class MarketOrders {
             return listOrders;
           }(),
         ),
+      /// Added extra pattern match for the case where an itemType is not produced by anything
+      /// and will therefore not return a JSON response with the producedBy key
+      {
+      'itemType': Map<String, dynamic> itemType,
+      'systems': Map<String, dynamic> systems,
+      'stationNames': Map<String, dynamic> stationNames,
+      'structureNames': Map<String, dynamic> structureNames,
+      'orders': List<dynamic> orders,
+      } =>
+        MarketOrders(
+          systems: () {
+            Map<String, System> mappedSystems = {};
+
+            systems.forEach((k,v) => mappedSystems[k] = System.fromJson(v));
+
+            return mappedSystems;
+          }(),
+          stationNames: stationNames.cast<String, String>(),
+          structureNames: structureNames.cast<String, String>(),
+          orders: () {
+            List<Order> listOrders = [];
+
+            for (Map<String, dynamic> orderObject in orders) {
+              listOrders.add(Order.fromJson(orderObject));
+            }
+
+            return listOrders;
+          }(),
+        ),
       _ => throw const FormatException('Failed to load market orders'),
     };
   }
