@@ -2,6 +2,7 @@ import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../app_themes.dart';
 import '../../model/entity/market_order.dart';
 
 class MarketOrdersSection extends StatefulWidget {
@@ -51,6 +52,12 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
           snapshot.data.orders.forEach((element) {
             element.isBuyOrder ? buyOrders.add(element) : sellOrders.add(element);
           });
+
+          /// sort sell orders by price from lowest to highest
+          sellOrders.sort((a, b) => a.price.compareTo(b.price));
+
+          /// sort buy orders by price from highest to lowest
+          buyOrders.sort((a, b) => b.price.compareTo(a.price));
         }
 
         return Column(
@@ -96,6 +103,8 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
   }
 
   Widget _buildOrders(List<Order> orders, MarketOrders marketOrders) {
+    CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
+
     return ListView.builder(
       itemCount: orders.length,
       itemBuilder: (BuildContext context, int index) {
@@ -105,14 +114,26 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
         structureName ?? "Unknown Structure";
 
         String secStatus = marketOrders.systems[orders[index].systemID.toString()]!.security.toStringAsFixed(1);
-        String location = "$secStatus $structureName";
 
         String remaining = "Remaining\n${toCommaSeparated(orders[index].volumeRemain)}";
         String price = "${toCommaSeparated(orders[index].price)} ISK";
 
         return ListTile(
           title: Text(price),
-          subtitle: Text(location),
+          subtitle: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: "$secStatus ",
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: customTheme?.securityStatusColour(double.parse(secStatus)),
+                    fontWeight: FontWeight.bold,
+                  )
+                ),
+                TextSpan(text: structureName),
+              ]
+            ),
+          ),
           trailing: Text(remaining),
         );
       },
