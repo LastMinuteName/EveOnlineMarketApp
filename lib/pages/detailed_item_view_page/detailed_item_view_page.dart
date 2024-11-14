@@ -1,5 +1,4 @@
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_averages_section.dart';
-import 'package:eve_online_market_application/pages/detailed_item_view_page/market_history_graph.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_orders_section.dart';
 import 'package:eve_online_market_application/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -25,11 +24,13 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   InvTypes? item;
   late Future _marketHistoryFuture;
   late Future _marketStatsFuture;
+  late Future _marketOrdersFuture;
 
   @override
   initState() {
     _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
     _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
+    _marketOrdersFuture = getMarketOrders(typeID: widget.typeID);
   }
 
   @override
@@ -84,8 +85,8 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                     marketHistoryFuture: _marketHistoryFuture,
                     marketStatsFuture: _marketStatsFuture
                   ),
-                  const SizedBox(height: 8.0),
-                  MarketOrdersSection(),
+                  const SizedBox(height: 16.0),
+                  MarketOrdersSection(marketOrdersFuture: _marketOrdersFuture),
                 ],
               ),
             ),
@@ -102,7 +103,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
 
   Widget _titleCard() {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
-
+    GlobalKey;
     Widget titleCard = Row(
       children: [
         SizedBox(
@@ -159,10 +160,4 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
       overflow: TextOverflow.fade,
     );
   }
-
-  Widget _buySellOrders() {
-    return const Placeholder();
-  }
-
-
 }

@@ -1,35 +1,116 @@
+import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../model/entity/market_order.dart';
+
 class MarketOrdersSection extends StatefulWidget {
-  const MarketOrdersSection({super.key});
+  const MarketOrdersSection({super.key, required this.marketOrdersFuture});
+  final Future marketOrdersFuture;
 
   @override
   State<MarketOrdersSection> createState() => _MarketOrdersSectionState();
 }
 
-class _MarketOrdersSectionState extends State<MarketOrdersSection> {
+class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  initState() {
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
-    @override
-    initState() {
-
-    }
-
     return Column(
       children: [
-        DefaultTabController(
-          length: 2,
-          child: TabBar(
-            tabs: [
-              Tab(child: Text(appLocalizations!.labelSell)),
-              Tab(child: Text(appLocalizations!.labelBuy)),
-            ],
+        Text(
+          appLocalizations!.ordersLabel,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ]
+        const SizedBox(height: 8),
+        _orderSection(),
+      ],
     );
+  }
+
+  Widget _orderSection() {
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
+
+    return FutureBuilder(
+      future: widget.marketOrdersFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        List<Order> sellOrders = [];
+        List<Order> buyOrders = [];
+
+        if (snapshot.hasData) {
+          snapshot.data.orders.forEach((element) {
+            element.isBuyOrder ? buyOrders.add(element) : sellOrders.add(element);
+          });
+        }
+
+        return Column(
+          children: [
+            TabBar(
+              controller: _tabController,
+              tabs: [
+                Tab(text: appLocalizations!.labelSell),
+                Tab(text: appLocalizations!.labelBuy),
+              ],
+            ),
+            SizedBox(
+              width: double.maxFinite,
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  sellOrders.isEmpty ?
+                    Container(
+                      width: double.maxFinite,
+                      alignment: Alignment.center,
+                      child: Text(
+                        appLocalizations.noSellOrders
+                      )
+                    ) :
+                    _buildOrders(sellOrders),
+                  buyOrders.isEmpty ?
+                    Container(
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        child: Text(
+                            appLocalizations.noBuyOrders
+                        )
+                    ) :
+                    _buildOrders(buyOrders),
+                ]
+              ),
+            )
+          ]
+        );
+      }
+    );
+  }
+
+  Widget _buildOrders(List<Order> orders) {
+    return ListView.builder(
+      itemCount: orders.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+            title: Text(
+              toCommaSeparated(orders[index].price),
+            )
+        );
+      },
+    );
+  }
+
+  @override
+  dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }

@@ -21,7 +21,6 @@ class MarketAveragesSection extends StatelessWidget {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           appLocalizations!.marketAveragesTitle,

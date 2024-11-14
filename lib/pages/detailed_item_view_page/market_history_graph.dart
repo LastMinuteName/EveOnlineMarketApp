@@ -36,6 +36,8 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
   }
 
   Widget graph() {
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
+
     return FutureBuilder(
       future: widget.marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -43,6 +45,7 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
         List<MarketHistory>marketHistory = [];
         double maxAvg = 0;
         double minAvg = 0;
+        int showDotThreshold = 14;
 
         if (snapshot.hasData) {
           (flSpotData, marketHistory, maxAvg, minAvg) = marketHistoryToLineChartData(snapshot.data);
@@ -50,46 +53,59 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
 
         return AspectRatio(
           aspectRatio: 4/3,
-          child: LineChart(
-            LineChartData(
-              maxY: maxAvg * 1.01,
-              minY: minAvg * 0.99,
-              lineTouchData: LineTouchData(
-                touchTooltipData: LineTouchTooltipData(
-                  fitInsideHorizontally: true,
-                  fitInsideVertically: false,
-                  getTooltipItems: (touchedSpots) {
-                    return touchedSpots.map((LineBarSpot touchedSpot) {
-                      return LineTooltipItem(
-                          '',
-                          Theme.of(context).textTheme.bodySmall!,
-                          children: [
-                            TextSpan(text: '${toCommaSeparated(marketHistory![touchedSpot.spotIndex].average)}\n'),
-                            TextSpan(text: '${DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)}'),
-                          ]
-                      );
-                    }).toList();
-                  }
-                )
-              ),
-              borderData: FlBorderData(
-                show: true,
-              ),
-              titlesData: const FlTitlesData(show: false),
-              gridData: const FlGridData(
-                show: false,
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: snapshot.hasData ? flSpotData : [],
-                  dotData: const FlDotData(
+          child: Stack(
+            children: [
+              LineChart(
+                LineChartData(
+                  maxY: maxAvg * 1.01,
+                  minY: minAvg * 0.99,
+                  lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                          fitInsideHorizontally: true,
+                          fitInsideVertically: false,
+                          getTooltipItems: (touchedSpots) {
+                            return touchedSpots.map((LineBarSpot touchedSpot) {
+                              return LineTooltipItem(
+                                  '',
+                                  Theme.of(context).textTheme.bodySmall!,
+                                  children: [
+                                    TextSpan(text: '${toCommaSeparated(marketHistory![touchedSpot.spotIndex].average)}\n'),
+                                    TextSpan(text: '${DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)}'),
+                                  ]
+                              );
+                            }).toList();
+                          }
+                      )
+                  ),
+                  borderData: FlBorderData(
+                    show: true,
+                  ),
+                  titlesData: const FlTitlesData(show: false),
+                  gridData: const FlGridData(
                     show: false,
                   ),
-                  color: Color.lerp(Theme.of(context).colorScheme.primary, Theme.of(context).extension<CustomTheme>()!.valueIncrease, 0.5),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: snapshot.hasData ? flSpotData : [],
+                      dotData: FlDotData(
+                        show: flSpotData.length <= showDotThreshold ? true : false,
+                      ),
+                      color: Theme.of(context).extension<CustomTheme>()!.valueIncrease,
+                    ),
+                  ],
                 ),
-              ],
-              clipData: const FlClipData.all(),
-            ),
+              ),
+              if (flSpotData.isEmpty) SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(appLocalizations!.noData),
+                  ],
+                ),
+              )
+            ],
           ),
         );
       }
@@ -123,7 +139,7 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
   (List<FlSpot>, List<MarketHistory>, double, double) marketHistoryToLineChartData(List<MarketHistory> data) {
     List<FlSpot> marketHistoryFlSpot = [];
     List<MarketHistory> marketHistory = [];
-    double maxAvg = 0, minAvg = double.infinity;
+    double maxAvg = 0, minAvg = double.maxFinite;
     DateTime? timeframeForComparison;
 
     if (data.isNotEmpty) {

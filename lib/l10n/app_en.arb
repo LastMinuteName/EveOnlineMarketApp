@@ -26,5 +26,9 @@
   "timeframeWeek": "Week",
   "timeframeMonth": "Month",
   "timeframeYear": "Year",
-  "timeframeAll": "All"
+  "timeframeAll": "All",
+  "ordersLabel": "Orders",
+  "noData": "No Data",
+  "noSellOrders": "There are no sell orders",
+  "noBuyOrders": "There are no buy orders"
 }
