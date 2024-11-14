@@ -76,16 +76,16 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
                         appLocalizations.noSellOrders
                       )
                     ) :
-                    _buildOrders(sellOrders),
+                    _buildOrders(sellOrders, snapshot.data),
                   buyOrders.isEmpty ?
                     Container(
-                        width: double.maxFinite,
-                        alignment: Alignment.center,
-                        child: Text(
-                            appLocalizations.noBuyOrders
-                        )
+                      width: double.maxFinite,
+                      alignment: Alignment.center,
+                      child: Text(
+                        appLocalizations.noBuyOrders
+                      )
                     ) :
-                    _buildOrders(buyOrders),
+                    _buildOrders(buyOrders, snapshot.data),
                 ]
               ),
             )
@@ -95,14 +95,25 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
     );
   }
 
-  Widget _buildOrders(List<Order> orders) {
+  Widget _buildOrders(List<Order> orders, MarketOrders marketOrders) {
     return ListView.builder(
       itemCount: orders.length,
       itemBuilder: (BuildContext context, int index) {
+        String? structureName;
+        structureName = marketOrders.stationNames[orders[index].locationID.toString()] ?? structureName;
+        structureName = marketOrders.structureNames[orders[index].locationID.toString()] ?? structureName;
+        structureName ?? "Unknown Structure";
+
+        String secStatus = marketOrders.systems[orders[index].systemID.toString()]!.security.toStringAsFixed(1);
+        String location = "$secStatus $structureName";
+
+        String remaining = "Remaining\n${toCommaSeparated(orders[index].volumeRemain)}";
+        String price = "${toCommaSeparated(orders[index].price)} ISK";
+
         return ListTile(
-            title: Text(
-              toCommaSeparated(orders[index].price),
-            )
+          title: Text(price),
+          subtitle: Text(location),
+          trailing: Text(remaining),
         );
       },
     );
