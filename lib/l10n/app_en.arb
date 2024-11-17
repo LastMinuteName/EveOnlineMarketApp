@@ -30,5 +30,8 @@
   "ordersLabel": "Orders",
   "noData": "No Data",
   "noSellOrders": "There are no sell orders",
-  "noBuyOrders": "There are no buy orders"
+  "noBuyOrders": "There are no buy orders",
+  "unknownStructure": "Unknown Structure",
+  "remainingLabel": "Remaining",
+  "isk": "ISK"
 }

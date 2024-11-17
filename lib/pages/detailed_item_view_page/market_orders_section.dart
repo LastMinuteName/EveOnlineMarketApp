@@ -104,6 +104,7 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
 
   Widget _buildOrders(List<Order> orders, MarketOrders marketOrders) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
+    AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     return ListView.builder(
       itemCount: orders.length,
@@ -111,12 +112,12 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
         String? structureName;
         structureName = marketOrders.stationNames[orders[index].locationID.toString()] ?? structureName;
         structureName = marketOrders.structureNames[orders[index].locationID.toString()] ?? structureName;
-        structureName ?? "Unknown Structure";
+        structureName ?? appLocalizations!.unknownStructure;
 
         String secStatus = marketOrders.systems[orders[index].systemID.toString()]!.security.toStringAsFixed(1);
 
-        String remaining = "Remaining\n${toCommaSeparated(orders[index].volumeRemain)}";
-        String price = "${toCommaSeparated(orders[index].price)} ISK";
+        String remaining = "${appLocalizations!.remainingLabel}\n${toCommaSeparated(orders[index].volumeRemain)}";
+        String price = "${toCommaSeparated(orders[index].price)} ${appLocalizations!.isk}";
 
         return ListTile(
           title: Text(price),
@@ -137,6 +138,12 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
           trailing: Text(remaining),
         );
       },
+    );
+  }
+
+  Widget _detailedOrderModal(Order order, String structureName, String secStatus) {
+    return Container(
+
     );
   }
 
