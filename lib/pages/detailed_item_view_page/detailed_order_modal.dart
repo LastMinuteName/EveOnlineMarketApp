@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../app_themes.dart';
 import '../../model/database/dbmodel.dart';
@@ -12,6 +13,12 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
   CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
   DbModel dbConn = Provider.of<DbModel>(context);
 
+  Duration orderTimeRemaining = order.issued.add(Duration(days: order.duration)).difference(DateTime.now());
+  int otrSeconds = orderTimeRemaining.inSeconds % 60;
+  int otrMinutes = orderTimeRemaining.inMinutes % 60;
+  int otrHours = orderTimeRemaining.inHours % 24;
+  int otrDays = orderTimeRemaining.inDays;
+
   return Container(
     padding: const EdgeInsets.all(16),
     child: Column(
@@ -20,12 +27,31 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
         Row(
           children: [
             Flexible(
+              flex: 1,
+              child: Text(
+                "${appLocalizations!.detailedOrderTitle}${order.orderID}",
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            )
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Flexible(
                 flex: 1,
                 fit: FlexFit.tight,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.priceLabel),
+                    Text(
+                      appLocalizations!.priceLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(toCommaSeparated(order.price))
                   ],
                 )
@@ -36,13 +62,19 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.minimumVolumeLabel),
+                    Text(
+                      appLocalizations!.minimumVolumeLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(toCommaSeparated(order.minVolume))
                   ],
                 )
             )
           ],
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             Flexible(
@@ -51,7 +83,12 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.remainingLabel),
+                    Text(
+                      appLocalizations!.remainingLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(toCommaSeparated(order.volumeRemain))
                   ]
               ),
@@ -62,13 +99,19 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.volumeTotalLabel),
+                    Text(
+                      appLocalizations!.volumeTotalLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(toCommaSeparated(order.volumeTotal))
                   ]
               ),
             )
           ],
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             Flexible(
@@ -77,7 +120,12 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations.locationLabel),
+                    Text(
+                      appLocalizations.locationLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text.rich(
                       TextSpan(
                           children: [
@@ -97,6 +145,7 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
             ),
           ],
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             Flexible(
@@ -105,7 +154,12 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.regionLabel),
+                    Text(
+                      appLocalizations!.regionLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     FutureBuilder(
                         future: dbConn.readMapRegions(regionID: order.regionID),
                         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -126,13 +180,19 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.rangeLabel),
+                    Text(
+                      appLocalizations!.rangeLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(order.range)
                   ]
               ),
             )
           ],
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             Flexible(
@@ -141,8 +201,13 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(appLocalizations!.orderCreationTIme),
-                    Text(order.issued.toIso8601String())
+                    Text(
+                      appLocalizations!.orderCreationTIme,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(DateFormat('dd MMM yyyy | HH:mm:ss').format(order.issued))
                   ]
               ),
             ),
@@ -150,11 +215,16 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               flex: 1,
               fit: FlexFit.tight,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(appLocalizations!.timeRemainingLabel),
-                    Text(order.duration.toString())
-                  ]
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.timeRemainingLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text("$otrDays Days ${otrHours.toString().padLeft(2,"0")}:${otrMinutes.toString().padLeft(2,"0")}:${otrSeconds.toString().padLeft(2,"0")}"),
+                ]
               ),
             )
           ],

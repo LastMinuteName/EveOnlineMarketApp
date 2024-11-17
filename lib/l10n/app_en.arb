@@ -41,5 +41,6 @@
   "minimumVolumeLabel": "Minimum Volume",
   "timeRemainingLabel": "Time Remaining",
   "orderCreationTIme": "Order Creation Time",
+  "detailedOrderTitle": "Detailed View For Order #",
   "isk": "ISK"
 }
