@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../entity/inv_types.dart';
+import '../entity/map_region.dart';
 
 class DbModel with ChangeNotifier{
   late Database dbConn;
@@ -170,5 +171,27 @@ class DbModel with ChangeNotifier{
     return result;
   }
 
-  Future<List>
+  Future<Map<int, MapRegion>> readMapRegions({int? regionID}) async {
+    List<Map<String, dynamic>> queryResult = regionID != null ?
+    await dbConn.rawQuery(
+      "SELECT * FROM mapRegions WHERE regionID = ?",
+      [regionID],
+    ) :
+    await dbConn.rawQuery(
+      "SELECT * FROM mapRegions",
+    );
+
+    Map<int, MapRegion> regionMap = {};
+
+    for (Map<String, dynamic> element in queryResult) {
+      regionMap[element["regionID"]] = MapRegion(
+        regionID: element["regionID"],
+        regionName: element["regionName"],
+        factionID: element["factionID"],
+        nebula: element["nebula"]
+      );
+    }
+
+    return regionMap;
+  }
 }

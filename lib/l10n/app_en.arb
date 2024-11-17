@@ -33,5 +33,13 @@
   "noBuyOrders": "There are no buy orders",
   "unknownStructure": "Unknown Structure",
   "remainingLabel": "Remaining",
+  "priceLabel": "Price",
+  "locationLabel": "Location",
+  "regionLabel": "Region",
+  "volumeTotalLabel":  "Volume Total",
+  "rangeLabel": "Range",
+  "minimumVolumeLabel": "Minimum Volume",
+  "timeRemainingLabel": "Time Remaining",
+  "orderCreationTIme": "Order Creation Time",
   "isk": "ISK"
 }

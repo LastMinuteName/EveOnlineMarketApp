@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../app_themes.dart';
 import '../../model/entity/market_order.dart';
+import 'detailed_order_modal.dart';
 
 class MarketOrdersSection extends StatefulWidget {
   const MarketOrdersSection({super.key, required this.marketOrdersFuture});
@@ -136,14 +137,16 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
             ),
           ),
           trailing: Text(remaining),
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return detailedOrderModal(orders[index], structureName!, secStatus, context);
+              }
+            );
+          },
         );
       },
-    );
-  }
-
-  Widget _detailedOrderModal(Order order, String structureName, String secStatus) {
-    return Container(
-
     );
   }
 

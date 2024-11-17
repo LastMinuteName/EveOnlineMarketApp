@@ -11,11 +11,11 @@ void main() async {
     print(element.toString());
   }*/
 
-  Stopwatch stopwatch = Stopwatch()..start();
+  /*Stopwatch stopwatch = Stopwatch()..start();
   MarketOrders response = await getMarketOrders(typeID: 40519);
   print('getMarketOrders() executed in ${stopwatch.elapsed.inMilliseconds}');
 
-  print(response);
+  print(response);*/
 
   /*Stopwatch stopwatch = Stopwatch()..start();
   MarketStats response = await getMarketStats(typeID: 17478, regionID: 10000002);
