@@ -1,3 +1,4 @@
+import 'package:eve_online_market_application/model/controller/shared_preferences_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,16 +17,21 @@ class MyApp extends StatelessWidget {
   /// create all models that need to be passed
   /// down to children to be used throughout the application
   DbModel dbModel = DbModel();
+  SharedPreferencesController sharedPrefController = SharedPreferencesController();
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: dbModel,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DbModel>(create: (_) => dbModel),
+        ChangeNotifierProvider<SharedPreferencesController>(create: (_) => sharedPrefController),
+      ],
       child: FutureBuilder(
-        future: dbModel.initDB(), //Initialize database
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          Widget children;
-
+        future: Future.wait([
+          dbModel.initDB(),
+          sharedPrefController.initController()
+        ]), //Initialize database
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             return MaterialApp(
               theme: customTheme(

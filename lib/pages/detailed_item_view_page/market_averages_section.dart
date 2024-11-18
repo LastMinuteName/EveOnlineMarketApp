@@ -3,17 +3,35 @@ import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:eve_online_market_application/utils/math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../app_themes.dart';
+import '../../constants/enums/eve_regions_market.dart';
 import '../../model/entity/market_stats.dart';
+import '../../model/web_calls/eve_esi.dart';
+import '../../model/web_calls/evetycoon.dart';
 import 'market_history_graph.dart';
 
 
 
-class MarketAveragesSection extends StatelessWidget {
-  final Future marketHistoryFuture;
-  final Future marketStatsFuture;
-  const MarketAveragesSection({super.key, required this.marketHistoryFuture, required this.marketStatsFuture});
+class MarketAveragesSection extends StatefulWidget {
+  final int typeID;
+  const MarketAveragesSection({super.key, required this.typeID});
+
+  @override
+  State<MarketAveragesSection> createState() => _MarketAveragesSectionState();
+}
+
+class _MarketAveragesSectionState extends State<MarketAveragesSection> {
+  late Future _marketHistoryFuture;
+  late Future _marketStatsFuture;
+  late Region regionID;
+
+  @override
+  void initState() {
+    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
+    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +47,26 @@ class MarketAveragesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8.0),
-        marketHistoryLatestSection(context),
+        _marketHistoryLatestSection(context),
         const SizedBox(height: 8.0),
-        fivePercentAverageSection(context),
+        _fivePercentAverageSection(context),
         const SizedBox(height: 8.0),
-        MarketHistoryGraph(marketHistoryFuture: marketHistoryFuture),
+        MarketHistoryGraph(marketHistoryFuture: _marketHistoryFuture),
       ],
     );
   }
 
-  Widget marketHistoryLatestSection(context) {
+  Widget _marketHistoryLatestSection(context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: marketHistoryFuture,
+      future: _marketHistoryFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         List<Map<String, dynamic>> latestMarketHistory = [
           {
             "label": appLocalizations!.labelLowest,
             "price": null,
-
           },
           {
             "label": appLocalizations!.labelAverage,
@@ -146,11 +163,11 @@ class MarketAveragesSection extends StatelessWidget {
     );
   }
 
-  Widget fivePercentAverageSection(context) {
+  Widget _fivePercentAverageSection(context) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     Widget body = FutureBuilder(
-      future: marketStatsFuture,
+      future: _marketStatsFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Text? buyAvg;
         Text? sellAvg;

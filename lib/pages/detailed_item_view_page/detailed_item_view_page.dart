@@ -22,14 +22,10 @@ class DetailedItemViewPage extends StatefulWidget {
 
 class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   InvTypes? item;
-  late Future _marketHistoryFuture;
-  late Future _marketStatsFuture;
   late Future _marketOrdersFuture;
 
   @override
   initState() {
-    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
-    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
     _marketOrdersFuture = getMarketOrders(typeID: widget.typeID);
   }
 
@@ -81,10 +77,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                   const SizedBox(height: 8.0),
                   _description(),
                   const SizedBox(height: 16.0),
-                  MarketAveragesSection(
-                    marketHistoryFuture: _marketHistoryFuture,
-                    marketStatsFuture: _marketStatsFuture
-                  ),
+                  MarketAveragesSection(typeID: widget.typeID),
                   const SizedBox(height: 16.0),
                   MarketOrdersSection(marketOrdersFuture: _marketOrdersFuture),
                 ],

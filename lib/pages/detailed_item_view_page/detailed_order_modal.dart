@@ -41,36 +41,36 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
         Row(
           children: [
             Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.priceLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+              flex: 1,
+              fit: FlexFit.tight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.priceLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(toCommaSeparated(order.price))
-                  ],
-                )
+                  ),
+                  Text(toCommaSeparated(order.price))
+                ],
+              )
             ),
             Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.minimumVolumeLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+              flex: 1,
+              fit: FlexFit.tight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.minimumVolumeLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(toCommaSeparated(order.minVolume))
-                  ],
-                )
+                  ),
+                  Text(toCommaSeparated(order.minVolume))
+                ],
+              )
             )
           ],
         ),
@@ -81,32 +81,32 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               flex: 1,
               fit: FlexFit.tight,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.remainingLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.remainingLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(toCommaSeparated(order.volumeRemain))
-                  ]
+                  ),
+                  Text(toCommaSeparated(order.volumeRemain))
+                ]
               ),
             ),
             Flexible(
               flex: 1,
               fit: FlexFit.tight,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.volumeTotalLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.volumeTotalLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(toCommaSeparated(order.volumeTotal))
-                  ]
+                  ),
+                  Text(toCommaSeparated(order.volumeTotal))
+                ]
               ),
             )
           ],
@@ -115,33 +115,33 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
         Row(
           children: [
             Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations.locationLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+              flex: 1,
+              fit: FlexFit.tight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations.locationLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text.rich(
-                      TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "$secStatus ",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: customTheme?.securityStatusColour(double.parse(secStatus)),
-                                  fontWeight: FontWeight.bold,
-                                )
-                            ),
-                            TextSpan(text: structureName),
-                          ]
-                      ),
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                            text: "$secStatus ",
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: customTheme?.securityStatusColour(double.parse(secStatus)),
+                              fontWeight: FontWeight.bold,
+                            )
+                        ),
+                        TextSpan(text: structureName),
+                      ]
                     ),
-                  ],
-                )
+                  ),
+                ],
+              )
             ),
           ],
         ),
@@ -161,15 +161,15 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
                       ),
                     ),
                     FutureBuilder(
-                        future: dbConn.readMapRegions(regionID: order.regionID),
-                        builder: (BuildContext context, AsyncSnapshot snapshot) {
-                          if(snapshot.hasData) {
-                            Map<int, MapRegion> regionMap = snapshot.data;
-                            return Text(regionMap[order.regionID]!.regionName);
-                          }
-
-                          return const CircularProgressIndicator();
+                      future: dbConn.readMapRegions(regionID: order.regionID),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if(snapshot.hasData) {
+                          Map<int, MapRegion> regionMap = snapshot.data;
+                          return Text(regionMap[order.regionID]!.regionName);
                         }
+
+                        return const CircularProgressIndicator();
+                      }
                     ),
                   ]
               ),
@@ -178,16 +178,16 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               flex: 1,
               fit: FlexFit.tight,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.rangeLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.rangeLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(order.range)
-                  ]
+                  ),
+                  Text(order.range)
+                ]
               ),
             )
           ],
@@ -199,16 +199,16 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
               flex: 1,
               fit: FlexFit.tight,
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appLocalizations!.orderCreationTIme,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations!.orderCreationTIme,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(DateFormat('dd MMM yyyy | HH:mm:ss').format(order.issued))
-                  ]
+                  ),
+                  Text(DateFormat('dd MMM yyyy | HH:mm:ss').format(order.issued))
+                ]
               ),
             ),
             Flexible(
