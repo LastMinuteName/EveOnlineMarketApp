@@ -42,5 +42,7 @@
   "timeRemainingLabel": "Time Remaining",
   "orderCreationTIme": "Order Creation Time",
   "detailedOrderTitle": "Detailed View Order #",
-  "isk": "ISK"
+  "isk": "ISK",
+
+  "selectRegionTitle": "Select Region"
 }

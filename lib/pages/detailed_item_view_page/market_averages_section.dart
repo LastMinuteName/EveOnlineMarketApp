@@ -1,11 +1,13 @@
 import 'package:eve_online_market_application/model/entity/market_history.dart';
+import 'package:eve_online_market_application/pages/detailed_item_view_page/market_region_dialog.dart';
 import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:eve_online_market_application/utils/math.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../../app_themes.dart';
 import '../../constants/enums/eve_regions_market.dart';
+import '../../model/controller/shared_preferences_controller.dart';
 import '../../model/entity/market_stats.dart';
 import '../../model/web_calls/eve_esi.dart';
 import '../../model/web_calls/evetycoon.dart';
@@ -24,27 +26,49 @@ class MarketAveragesSection extends StatefulWidget {
 class _MarketAveragesSectionState extends State<MarketAveragesSection> {
   late Future _marketHistoryFuture;
   late Future _marketStatsFuture;
-  late Region regionID;
-
-  @override
-  void initState() {
-    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: Region.theForge.id);
-    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: Region.theForge.id);
-    super.initState();
-  }
+  Region? _region;
+  late SharedPreferencesController _prefController;
 
   @override
   Widget build(BuildContext context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
+    _prefController = Provider.of<SharedPreferencesController>(context);
+    _region = _region ?? _prefController.getMarketRegion() ?? Region.theForge;
+    _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: _region!.id);
+    _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: _region!.id);
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          appLocalizations!.marketAveragesTitle,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              appLocalizations!.marketAveragesTitle,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return MarketRegionDialog(
+                      currentRegion: _region,
+                      callback: (Region selectedRegion){
+                        setState(() {
+                          _region = selectedRegion;
+                        });
+                      }
+                    );
+                  }
+                );
+              },
+              child: Text("Region"),
+            ),
+          ],
         ),
         const SizedBox(height: 8.0),
         _marketHistoryLatestSection(context),
