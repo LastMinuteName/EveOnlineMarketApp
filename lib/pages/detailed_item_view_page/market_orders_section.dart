@@ -1,3 +1,4 @@
+import 'package:eve_online_market_application/pages/detailed_item_view_page/orders_filter_dialog.dart';
 import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -28,11 +29,29 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
 
     return Column(
       children: [
-        Text(
-          appLocalizations!.ordersLabel,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              appLocalizations!.ordersLabel,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return OrdersFilterDialog(
+
+                    );
+                  }
+                );
+              },
+              child: Text("Filter"),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         _orderSection(),

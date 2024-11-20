@@ -152,14 +152,14 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
                         WidgetSpan(
                           alignment: PlaceholderAlignment.middle,
                           child: element["percentageChange"] > 0 ?
-                          Icon(
-                            Icons.arrow_upward,
-                            color: customTheme?.valueIncrease,
-                          ) :
-                          Icon(
-                            Icons.arrow_downward,
-                            color: customTheme?.valueDecrease,
-                          ),
+                            Icon(
+                              Icons.arrow_upward,
+                              color: customTheme?.valueIncrease,
+                            ) :
+                            Icon(
+                              Icons.arrow_downward,
+                              color: customTheme?.valueDecrease,
+                            ),
                         ),
                         TextSpan(text: "${element["percentageChange"].toStringAsFixed(2)}%"),
                       ]

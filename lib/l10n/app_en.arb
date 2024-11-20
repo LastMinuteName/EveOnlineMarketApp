@@ -44,5 +44,8 @@
   "detailedOrderTitle": "Detailed View Order #",
   "isk": "ISK",
 
-  "selectRegionTitle": "Select Region"
+  "selectRegionTitle": "Select Region",
+  "saveButtonText": "Save",
+  "setAsDefaultButtonText": "Set As Default",
+  "ordersFilterTitle": "Filter Orders"
 }

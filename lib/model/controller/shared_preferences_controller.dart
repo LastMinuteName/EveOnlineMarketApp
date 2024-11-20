@@ -20,6 +20,29 @@ class SharedPreferencesController with ChangeNotifier {
     _preferences.setString("market_region", regionByName);
   }
 
+  Set<int> getOrdersFilter() {
+    List<String>? ordersFilterList = _preferences.getStringList("orders_filter");
+    Set<int> ordersFilterSet = {};
+
+    if (ordersFilterList != null) {
+      for (var element in ordersFilterList) {
+        ordersFilterSet.add(int.parse(element));
+      }
+    }
+
+    return ordersFilterSet;
+  }
+
+  void setOrdersFilter(Set<int> ordersFilterSet) {
+    List<String> ordersFilterList = [];
+
+    for (var regionID in ordersFilterSet) {
+      ordersFilterList.add(regionID.toString());
+    }
+
+    _preferences.setStringList("orders_filter", ordersFilterList);
+  }
+
   void clear() {
     _preferences.clear();
   }

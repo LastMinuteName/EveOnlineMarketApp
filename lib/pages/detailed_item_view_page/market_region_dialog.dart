@@ -27,7 +27,7 @@ class _MarketRegionDialogState extends State<MarketRegionDialog> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
-    SharedPreferencesController _prefController = Provider.of<SharedPreferencesController>(context);
+    SharedPreferencesController prefController = Provider.of<SharedPreferencesController>(context);
 
     return Dialog(
       child: Padding(
@@ -41,6 +41,7 @@ class _MarketRegionDialogState extends State<MarketRegionDialog> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height:8.0),
             for (Region region in Region.values)
               ListTile(
                 title: Text(region.name),
@@ -59,25 +60,25 @@ class _MarketRegionDialogState extends State<MarketRegionDialog> {
                   });
                 },
               ),
+            const SizedBox(height:8.0),
             SizedBox(
-              width: double.infinity,
               child: Wrap(
                 alignment: WrapAlignment.spaceAround,
                 children: [
                   ElevatedButton(
                     onPressed: () {
                       widget.callback(_selectedRegion!);
-                      _prefController.setMarketRegion(_selectedRegion!);
+                      prefController.setMarketRegion(_selectedRegion!);
                       Navigator.pop(context);
                     },
-                    child: Text("Set As Default"),
+                    child: Text(appLocalizations.setAsDefaultButtonText),
                   ),
                   ElevatedButton(
                     onPressed: (){
                       widget.callback(_selectedRegion!);
                       Navigator.pop(context);
                     },
-                    child: Text("Save"),
+                    child: Text(appLocalizations.saveButtonText),
                   ),
                 ],
               ),
