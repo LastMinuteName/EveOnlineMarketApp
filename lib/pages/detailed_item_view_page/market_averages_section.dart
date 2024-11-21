@@ -27,14 +27,13 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
   late Future _marketHistoryFuture;
   late Future _marketStatsFuture;
   Region? _region;
-  late SharedPreferencesController _prefController;
 
   @override
   Widget build(BuildContext context) {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
-    _prefController = Provider.of<SharedPreferencesController>(context);
-    _region = _region ?? _prefController.getMarketRegion() ?? Region.theForge;
+    SharedPreferencesController prefController = Provider.of<SharedPreferencesController>(context);
+    _region = _region ?? prefController.getMarketRegion() ?? Region.theForge;
     _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: _region!.id);
     _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: _region!.id);
 

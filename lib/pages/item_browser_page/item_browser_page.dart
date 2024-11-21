@@ -71,7 +71,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     return AppBar(
       automaticallyImplyLeading: false,
       title: TextField(
-        autofocus: true,
+        autofocus: false,
         controller: _textEditingController,
         decoration: InputDecoration.collapsed(
             hintText: AppLocalizations.of(context)!.itemBrowserPageSearchHint

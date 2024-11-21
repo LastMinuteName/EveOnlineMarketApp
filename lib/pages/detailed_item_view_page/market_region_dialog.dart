@@ -62,6 +62,7 @@ class _MarketRegionDialogState extends State<MarketRegionDialog> {
               ),
             const SizedBox(height:8.0),
             SizedBox(
+              width: double.infinity,
               child: Wrap(
                 alignment: WrapAlignment.spaceAround,
                 children: [

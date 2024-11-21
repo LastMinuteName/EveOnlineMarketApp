@@ -173,13 +173,13 @@ class DbModel with ChangeNotifier{
 
   Future<Map<int, MapRegion>> readMapRegions({int? regionID}) async {
     List<Map<String, dynamic>> queryResult = regionID != null ?
-    await dbConn.rawQuery(
-      "SELECT * FROM mapRegions WHERE regionID = ?",
-      [regionID],
-    ) :
-    await dbConn.rawQuery(
-      "SELECT * FROM mapRegions",
-    );
+      await dbConn.rawQuery(
+        "SELECT * FROM mapRegions WHERE regionID = ?",
+        [regionID],
+      ) :
+      await dbConn.rawQuery(
+        "SELECT * FROM mapRegions",
+      );
 
     Map<int, MapRegion> regionMap = {};
 
@@ -189,6 +189,30 @@ class DbModel with ChangeNotifier{
         regionName: element["regionName"],
         factionID: element["factionID"],
         nebula: element["nebula"]
+      );
+    }
+
+    return regionMap;
+  }
+
+  Future<Map<int, MapRegion>> readMapRegionsFromString(String? regionName) async {
+    List<Map<String, dynamic>> queryResult = regionName != null ?
+      await dbConn.rawQuery(
+        "SELECT * FROM mapRegions WHERE regionName LIKE ?",
+        ['%$regionName%']
+      ) :
+      await dbConn.rawQuery(
+        "SELECT * FROM mapRegions",
+      );
+
+    Map<int, MapRegion> regionMap = {};
+
+    for (Map<String, dynamic> element in queryResult) {
+      regionMap[element["regionID"]] = MapRegion(
+          regionID: element["regionID"],
+          regionName: element["regionName"],
+          factionID: element["factionID"],
+          nebula: element["nebula"]
       );
     }
 

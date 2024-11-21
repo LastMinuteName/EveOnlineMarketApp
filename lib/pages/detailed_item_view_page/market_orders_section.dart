@@ -1,8 +1,9 @@
+import 'package:eve_online_market_application/model/controller/shared_preferences_controller.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/orders_filter_dialog.dart';
 import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:provider/provider.dart';
 import '../../app_themes.dart';
 import '../../model/entity/market_order.dart';
 import 'detailed_order_modal.dart';
@@ -17,6 +18,7 @@ class MarketOrdersSection extends StatefulWidget {
 
 class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  Set<int>? _ordersFilter;
 
   @override
   initState() {
@@ -26,6 +28,8 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
   @override
   Widget build(BuildContext context) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
+    SharedPreferencesController prefController = Provider.of<SharedPreferencesController>(context);
+    _ordersFilter = _ordersFilter ?? prefController.getOrdersFilter() ?? {};
 
     return Column(
       children: [
@@ -44,7 +48,12 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
                   context: context,
                   builder: (BuildContext context) {
                     return OrdersFilterDialog(
-
+                      selectedFilters: _ordersFilter!,
+                      callback: (Set<int> ordersFilter) {
+                        setState(() {
+                          _ordersFilter = ordersFilter;
+                        });
+                      },
                     );
                   }
                 );
@@ -54,12 +63,14 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
           ],
         ),
         const SizedBox(height: 8),
-        _orderSection(),
+        _orderSection(
+          selectedFilters: _ordersFilter!,
+        ),
       ],
     );
   }
 
-  Widget _orderSection() {
+  Widget _orderSection({required Set<int> selectedFilters}) {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
 
     return FutureBuilder(
@@ -69,8 +80,10 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
         List<Order> buyOrders = [];
 
         if (snapshot.hasData) {
-          snapshot.data.orders.forEach((element) {
-            element.isBuyOrder ? buyOrders.add(element) : sellOrders.add(element);
+          snapshot.data.orders.forEach((Order order) {
+            if (_ordersFilter!.contains(order.regionID) || _ordersFilter!.isEmpty) {
+              order.isBuyOrder ? buyOrders.add(order) : sellOrders.add(order);
+            }
           });
 
           /// sort sell orders by price from lowest to highest
@@ -89,31 +102,35 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
                 Tab(text: appLocalizations!.labelBuy),
               ],
             ),
-            SizedBox(
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  sellOrders.isEmpty ?
-                    Container(
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      child: Text(
-                        appLocalizations.noSellOrders
-                      )
-                    ) :
-                    _buildOrders(sellOrders, snapshot.data),
-                  buyOrders.isEmpty ?
-                    Container(
-                      width: double.maxFinite,
-                      alignment: Alignment.center,
-                      child: Text(
-                        appLocalizations.noBuyOrders
-                      )
-                    ) :
-                    _buildOrders(buyOrders, snapshot.data),
-                ]
+            Card.filled(
+              color: Colors.transparent,
+              margin: EdgeInsets.zero,
+              child: SizedBox(
+                width: double.maxFinite,
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    sellOrders.isEmpty ?
+                      Container(
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        child: Text(
+                          appLocalizations.noSellOrders
+                        )
+                      ) :
+                      _buildOrders(sellOrders, snapshot.data),
+                    buyOrders.isEmpty ?
+                      Container(
+                        width: double.maxFinite,
+                        alignment: Alignment.center,
+                        child: Text(
+                          appLocalizations.noBuyOrders
+                        )
+                      ) :
+                      _buildOrders(buyOrders, snapshot.data),
+                  ]
+                ),
               ),
             )
           ]

@@ -47,5 +47,6 @@
   "selectRegionTitle": "Select Region",
   "saveButtonText": "Save",
   "setAsDefaultButtonText": "Set As Default",
-  "ordersFilterTitle": "Filter Orders"
+  "ordersFilterTitle": "Filter Orders",
+  "clearButton": "Clear"
 }
