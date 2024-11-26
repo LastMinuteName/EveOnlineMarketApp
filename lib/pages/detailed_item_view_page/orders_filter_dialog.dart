@@ -45,8 +45,6 @@ class _OrdersFilterDialogState extends State<OrdersFilterDialog> {
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
     SharedPreferencesController prefController = Provider.of<SharedPreferencesController>(context);
 
-    print(dbModel.readMapRegionsFromString(""));
-
     return Dialog(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -68,7 +66,7 @@ class _OrdersFilterDialogState extends State<OrdersFilterDialog> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       ListTile(
                         title: TextField(
                           controller: _textEditingController,
@@ -87,7 +85,7 @@ class _OrdersFilterDialogState extends State<OrdersFilterDialog> {
                             icon: const Icon(Icons.close)
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.5,
                         child: ListView.builder(
@@ -114,7 +112,7 @@ class _OrdersFilterDialogState extends State<OrdersFilterDialog> {
                           }
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       SizedBox(
                         width: double.infinity,
                         child: Wrap(

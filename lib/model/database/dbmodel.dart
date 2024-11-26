@@ -17,6 +17,8 @@ class DbModel with ChangeNotifier{
     return "DB Loaded";
   }
 
+
+
   Future<bool> _loadEveDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, "eve.db");
@@ -41,7 +43,26 @@ class DbModel with ChangeNotifier{
   }
 
   Future<bool> _initUserDB() async {
-    //if (await dbConn.query('sqlite_master', where: 'name = ?', whereArgs:['tablename']) == []) {}
+    const String usrDbAlias = "USER_DATABASE";
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, "user.db");
+
+    try {
+      await dbConn.rawQuery("ATTACH DATABASE '$path' AS '$usrDbAlias';");
+      await dbConn.rawQuery(
+        """
+        CREATE TABLE IF NOT EXISTS $usrDbAlias.watchlist (
+          typeID INTEGER NOT NULL,
+          category TEXT NOT NULL DEFAULT 'Default',
+          PRIMARY KEY (typeID, category)
+        );
+        """
+      );
+    }
+    on DatabaseException catch (e) {
+      print(e);
+    }
+
     return true;
   }
 
@@ -217,5 +238,17 @@ class DbModel with ChangeNotifier{
     }
 
     return regionMap;
+  }
+
+  Future<bool> readWatchlist() async {
+    return true;
+  }
+
+  dynamic createWatchlist() {
+
+  }
+
+  dynamic deleteWatchlist() async {
+
   }
 }
