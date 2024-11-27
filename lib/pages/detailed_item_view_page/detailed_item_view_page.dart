@@ -1,3 +1,5 @@
+import 'package:eve_online_market_application/model/entity/watchlist.dart';
+import 'package:eve_online_market_application/pages/detailed_item_view_page/action_section.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_averages_section.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_orders_section.dart';
 import 'package:eve_online_market_application/utils/expandable_text.dart';
@@ -22,6 +24,7 @@ class DetailedItemViewPage extends StatefulWidget {
 
 class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   InvTypes? item;
+  late bool _watchlisted;
   late Future _marketOrdersFuture;
 
   @override
@@ -56,14 +59,18 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
     DbModel dbConn = Provider.of<DbModel>(context);
 
     FutureBuilder body = FutureBuilder(
-      future: dbConn.readInvTypesByTypeID(widget.typeID),
+      future: Future.wait([
+        dbConn.readInvTypesByTypeID(widget.typeID),
+        dbConn.readWatchlistTypeID(widget.typeID)
+      ]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return centeredCircularProgressIndicator();
         }
 
         if (snapshot.hasData) {
-          item = snapshot.data;
+          item = snapshot.data[0];
+          List<Watchlist> watchlist = snapshot.data[1];
 
           return SingleChildScrollView(
             child: Padding(
@@ -73,7 +80,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
                   const SizedBox(height: 8.0),
                   _titleCard(),
                   const SizedBox(height: 8.0),
-                  _actionSegment(),
+                  ActionSection(typeID: widget.typeID, watchlisted: watchlist.isNotEmpty),
                   const SizedBox(height: 8.0),
                   _description(),
                   const SizedBox(height: 16.0),
@@ -116,34 +123,6 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
       ],
     );
     return titleCard;
-  }
-
-  Widget _actionSegment() {
-    Widget actionSegment = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        TextButton(
-          onPressed: () {  },
-          child: const Column(
-            children: [
-              Icon(Icons.favorite_outline),
-              Text("Watchlist"),
-            ],
-          ),
-        ),
-        TextButton(
-          onPressed: () {  },
-          child: const Column(
-            children: [
-              Icon(Icons.favorite),
-              Text("Watchlist"),
-            ],
-          ),
-        )
-      ],
-    );
-
-    return actionSegment;
   }
 
   Widget _description() {

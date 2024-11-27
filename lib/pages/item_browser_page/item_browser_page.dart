@@ -154,22 +154,22 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
   }
 
   Widget _invTypesSearchList(BuildContext context) {
-    DbModel dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = dbConn.readInvTypesByTypeName(_textEditingController.text);
+    DbModel _dbConn = Provider.of<DbModel>(context);
+    Future<List> futureData = _dbConn.readInvTypesByTypeName(_textEditingController.text);
 
     return _listBuilder(futureData, 1);
   }
 
   FutureBuilder _invMarketGroupList(BuildContext context) {
-    DbModel dbConn = Provider.of<DbModel>(context);
-    Future<List<InvMarketGroups>> futureData = dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last.marketGroupID);
+    DbModel _dbConn = Provider.of<DbModel>(context);
+    Future<List<InvMarketGroups>> futureData = _dbConn.readInvMarketGroups(parentGroupID: _itemNavigationPath.last.marketGroupID);
 
     return _listBuilder(futureData, 0);
   }
 
   FutureBuilder _invTypesList(BuildContext context) {
-    DbModel dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = dbConn.readInvTypesGroup(_itemNavigationPath.last.marketGroupID.toString());
+    DbModel _dbConn = Provider.of<DbModel>(context);
+    Future<List> futureData = _dbConn.readInvTypesGroup(_itemNavigationPath.last.marketGroupID.toString());
 
     return _listBuilder(futureData, 1);
   }

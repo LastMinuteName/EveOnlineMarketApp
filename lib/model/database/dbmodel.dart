@@ -7,17 +7,17 @@ import 'package:path/path.dart';
 
 import '../entity/inv_types.dart';
 import '../entity/map_region.dart';
+import '../entity/watchlist.dart';
 
 class DbModel with ChangeNotifier{
-  late Database dbConn;
+  late Database _dbConn;
+  static const String usrDbAlias = "USER_DATABASE";
 
   Future<String> initDB() async {
     await _loadEveDB();
     await _initUserDB();
     return "DB Loaded";
   }
-
-
 
   Future<bool> _loadEveDB() async {
     final dbPath = await getDatabasesPath();
@@ -38,18 +38,17 @@ class DbModel with ChangeNotifier{
       await File(path).writeAsBytes(bytes, flush:true);
     }
 
-    dbConn = await openDatabase(path);
+    _dbConn = await openDatabase(path);
     return true;
   }
 
   Future<bool> _initUserDB() async {
-    const String usrDbAlias = "USER_DATABASE";
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, "user.db");
 
     try {
-      await dbConn.rawQuery("ATTACH DATABASE '$path' AS '$usrDbAlias';");
-      await dbConn.rawQuery(
+      await _dbConn.execute("ATTACH DATABASE '$path' AS '$usrDbAlias';");
+      await _dbConn.execute(
         """
         CREATE TABLE IF NOT EXISTS $usrDbAlias.watchlist (
           typeID INTEGER NOT NULL,
@@ -60,7 +59,7 @@ class DbModel with ChangeNotifier{
       );
     }
     on DatabaseException catch (e) {
-      print(e);
+
     }
 
     return true;
@@ -101,7 +100,7 @@ class DbModel with ChangeNotifier{
 
     query = "$query $conditions";
 
-    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
       query,
       queryArguments,
     );
@@ -123,7 +122,7 @@ class DbModel with ChangeNotifier{
   /// queries database for list of invTypes (eve online item) via marketGroupID
   /// the list that is returned will contain InvTypes that all possess the same marketGroupID
   Future<List<InvTypes>> readInvTypesGroup(String marketGroupID) async {
-    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE marketGroupID = ?',
       [marketGroupID],
     );
@@ -146,7 +145,7 @@ class DbModel with ChangeNotifier{
   /// queries database for a invType (eve online item) via typeID
   /// returns a null if nothing was found (an entry for the typeID does not exist)
   Future<InvTypes?> readInvTypesByTypeID(int typeID) async {
-    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
       'SELECT * FROM invTypes WHERE typeID = ?',
       [typeID],
     );
@@ -169,7 +168,7 @@ class DbModel with ChangeNotifier{
   /// queries database for list of invTypes (eve online item) via String typeName
   /// query will return invTypes that are most similar to the typeName used
   Future<List<InvTypes>> readInvTypesByTypeName(String typeName) async {
-    List<Map<String, dynamic>> queryResult = await dbConn.rawQuery(
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
       '''
       SELECT * FROM invTypes 
       WHERE typeName LIKE ? AND published=1 AND marketGroupID NOT NULL 
@@ -194,11 +193,11 @@ class DbModel with ChangeNotifier{
 
   Future<Map<int, MapRegion>> readMapRegions({int? regionID}) async {
     List<Map<String, dynamic>> queryResult = regionID != null ?
-      await dbConn.rawQuery(
+      await _dbConn.rawQuery(
         "SELECT * FROM mapRegions WHERE regionID = ?",
         [regionID],
       ) :
-      await dbConn.rawQuery(
+      await _dbConn.rawQuery(
         "SELECT * FROM mapRegions",
       );
 
@@ -218,11 +217,11 @@ class DbModel with ChangeNotifier{
 
   Future<Map<int, MapRegion>> readMapRegionsFromString(String? regionName) async {
     List<Map<String, dynamic>> queryResult = regionName != null ?
-      await dbConn.rawQuery(
+      await _dbConn.rawQuery(
         "SELECT * FROM mapRegions WHERE regionName LIKE ?",
         ['%$regionName%']
       ) :
-      await dbConn.rawQuery(
+      await _dbConn.rawQuery(
         "SELECT * FROM mapRegions",
       );
 
@@ -240,15 +239,66 @@ class DbModel with ChangeNotifier{
     return regionMap;
   }
 
-  Future<bool> readWatchlist() async {
-    return true;
+  Future<List<Watchlist>> readWatchlistCategory(String category) async {
+    List<Watchlist> watchlist = [];
+
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
+      "SELECT * FROM $usrDbAlias.watchlist WHERE category = ?",
+      [category]
+    );
+
+    for (Map<String, dynamic> element in queryResult) {
+      watchlist.add(
+        Watchlist(
+          typeID: element["typeID"],
+          category: element["category"]
+        )
+      );
+    }
+
+    return watchlist;
   }
 
-  dynamic createWatchlist() {
+  Future<List<Watchlist>> readWatchlistTypeID(int typeID) async {
+    List<Watchlist> watchlist = [];
 
+    List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
+        "SELECT * FROM $usrDbAlias.watchlist WHERE typeID = ?",
+        [typeID]
+    );
+
+    for (Map<String, dynamic> element in queryResult) {
+      watchlist.add(
+          Watchlist(
+              typeID: element["typeID"],
+              category: element["category"]
+          )
+      );
+    }
+
+    return watchlist;
   }
 
-  dynamic deleteWatchlist() async {
+  Future<int> insertWatchlist(Watchlist watchlistItem) async {
+    int result = watchlistItem.category == null ?
+    await _dbConn.rawInsert(
+      "INSERT INTO $usrDbAlias.watchlist(typeID) VALUES(?)",
+      [watchlistItem.typeID]
+    ) :
+    await _dbConn.rawInsert(
+      "INSERT INTO $usrDbAlias.watchlist(typeID, category) VALUES(?, ?)",
+      [watchlistItem.typeID, watchlistItem.category]
+    );
 
+    return result;
+  }
+
+  Future<int> deleteWatchlist(Watchlist watchlistItem) async {
+    int result = await _dbConn.rawDelete(
+      "DELETE FROM $usrDbAlias.watchlist WHERE typeID = ? AND category = ?",
+      [watchlistItem.typeID, watchlistItem.category]
+    );
+
+    return result;
   }
 }

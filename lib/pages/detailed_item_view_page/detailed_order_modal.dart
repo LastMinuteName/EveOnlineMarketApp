@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 Widget detailedOrderModal(Order order, String structureName, String secStatus, BuildContext context) {
   AppLocalizations? appLocalizations = AppLocalizations.of(context);
   CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
-  DbModel dbConn = Provider.of<DbModel>(context);
+  DbModel _dbConn = Provider.of<DbModel>(context);
 
   Duration orderTimeRemaining = order.issued.add(Duration(days: order.duration)).difference(DateTime.now());
   int otrSeconds = orderTimeRemaining.inSeconds % 60;
@@ -161,7 +161,7 @@ Widget detailedOrderModal(Order order, String structureName, String secStatus, B
                       ),
                     ),
                     FutureBuilder(
-                      future: dbConn.readMapRegions(regionID: order.regionID),
+                      future: _dbConn.readMapRegions(regionID: order.regionID),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if(snapshot.hasData) {
                           Map<int, MapRegion> regionMap = snapshot.data;
