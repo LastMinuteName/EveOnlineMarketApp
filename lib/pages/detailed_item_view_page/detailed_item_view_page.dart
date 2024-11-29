@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app_themes.dart';
 import '../../constants/enums/eve_regions_market.dart';
-import '../../model/entity/inv_types.dart';
+import '../../model/entity/inv_type.dart';
 import '../../model/web_calls/eve_esi.dart';
 import '../../model/web_calls/evetycoon.dart';
 import '../../utils/icon_grabber.dart';
-import '../../utils/reusable_widgets.dart';
+import '../../widgets/reusable_widgets.dart';
 import '../../model/database/dbmodel.dart';
 
 class DetailedItemViewPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class DetailedItemViewPage extends StatefulWidget {
 }
 
 class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
-  InvTypes? item;
+  InvType? item;
   late bool _watchlisted;
   late Future _marketOrdersFuture;
 
@@ -60,7 +60,7 @@ class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
 
     FutureBuilder body = FutureBuilder(
       future: Future.wait([
-        dbConn.readInvTypesByTypeID(widget.typeID),
+        dbConn.readInvTypeByTypeID(widget.typeID),
         dbConn.readWatchlistTypeID(widget.typeID)
       ]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {

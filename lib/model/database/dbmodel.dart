@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../entity/inv_types.dart';
+import '../entity/inv_type.dart';
 import '../entity/map_region.dart';
 import '../entity/watchlist.dart';
 
@@ -119,16 +119,16 @@ class DbModel with ChangeNotifier{
     return result;
   }
 
-  /// queries database for list of invTypes (eve online item) via marketGroupID
-  /// the list that is returned will contain InvTypes that all possess the same marketGroupID
-  Future<List<InvTypes>> readInvTypesGroup(String marketGroupID) async {
+  /// queries database for list of InvType (eve online item) via marketGroupID
+  /// the list that is returned will contain InvType that all possess the same marketGroupID
+  Future<List<InvType>> readInvTypeGroup(String marketGroupID) async {
     List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
-      'SELECT * FROM invTypes WHERE marketGroupID = ?',
+      'SELECT * FROM InvTypes WHERE marketGroupID = ?',
       [marketGroupID],
     );
 
-    List<InvTypes> result = List<InvTypes>.generate(queryResult.length, (i) {
-      return InvTypes(
+    List<InvType> result = List<InvType>.generate(queryResult.length, (i) {
+      return InvType(
         typeID: queryResult[i]["typeID"],
         groupID: queryResult[i]["groupID"],
         typeName: queryResult[i]["typeName"],
@@ -144,15 +144,15 @@ class DbModel with ChangeNotifier{
 
   /// queries database for a invType (eve online item) via typeID
   /// returns a null if nothing was found (an entry for the typeID does not exist)
-  Future<InvTypes?> readInvTypesByTypeID(int typeID) async {
+  Future<InvType?> readInvTypeByTypeID(int typeID) async {
     List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
-      'SELECT * FROM invTypes WHERE typeID = ?',
+      'SELECT * FROM InvTypes WHERE typeID = ?',
       [typeID],
     );
 
     if (queryResult.isEmpty) return null;
 
-    InvTypes result = InvTypes(
+    InvType result = InvType(
       typeID: queryResult[0]["typeID"],
       groupID: queryResult[0]["groupID"],
       typeName: queryResult[0]["typeName"],
@@ -165,19 +165,19 @@ class DbModel with ChangeNotifier{
     return result;
   }
 
-  /// queries database for list of invTypes (eve online item) via String typeName
-  /// query will return invTypes that are most similar to the typeName used
-  Future<List<InvTypes>> readInvTypesByTypeName(String typeName) async {
+  /// queries database for list of InvType (eve online item) via String typeName
+  /// query will return InvType that are most similar to the typeName used
+  Future<List<InvType>> readInvTypeByTypeName(String typeName) async {
     List<Map<String, dynamic>> queryResult = await _dbConn.rawQuery(
       '''
-      SELECT * FROM invTypes 
+      SELECT * FROM InvTypes 
       WHERE typeName LIKE ? AND published=1 AND marketGroupID NOT NULL 
       ORDER BY TypeName ASC''',
       ['%$typeName%'],
     );
 
-    List<InvTypes> result = List<InvTypes>.generate(queryResult.length, (i) {
-      return InvTypes(
+    List<InvType> result = List<InvType>.generate(queryResult.length, (i) {
+      return InvType(
         typeID: queryResult[i]["typeID"],
         groupID: queryResult[i]["groupID"],
         typeName: queryResult[i]["typeName"],

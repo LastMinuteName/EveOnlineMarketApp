@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../model/database/dbmodel.dart';
 import 'package:eve_online_market_application/utils/icon_grabber.dart';
-import '../../utils/reusable_widgets.dart';
+import '../../widgets/reusable_widgets.dart';
 
 class ItemBrowserPage extends StatefulWidget {
   const ItemBrowserPage({super.key});
@@ -143,19 +143,19 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
 
   Widget _marketList(BuildContext context) {
     if (_isSearching) {
-      return _invTypesSearchList(context);
+      return _InvTypeSearchList(context);
     }
 
     if (_itemNavigationPath.last.hasTypes == 1) {
-      return _invTypesList(context);
+      return _InvTypeList(context);
     }
 
     return _invMarketGroupList(context);
   }
 
-  Widget _invTypesSearchList(BuildContext context) {
+  Widget _InvTypeSearchList(BuildContext context) {
     DbModel _dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = _dbConn.readInvTypesByTypeName(_textEditingController.text);
+    Future<List> futureData = _dbConn.readInvTypeByTypeName(_textEditingController.text);
 
     return _listBuilder(futureData, 1);
   }
@@ -167,9 +167,9 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
     return _listBuilder(futureData, 0);
   }
 
-  FutureBuilder _invTypesList(BuildContext context) {
+  FutureBuilder _InvTypeList(BuildContext context) {
     DbModel _dbConn = Provider.of<DbModel>(context);
-    Future<List> futureData = _dbConn.readInvTypesGroup(_itemNavigationPath.last.marketGroupID.toString());
+    Future<List> futureData = _dbConn.readInvTypeGroup(_itemNavigationPath.last.marketGroupID.toString());
 
     return _listBuilder(futureData, 1);
   }
@@ -196,7 +196,7 @@ class _ItemBrowserPageState extends State<ItemBrowserPage> {
                 Text title;
                 Function onTapCallback;
 
-                //listType 0 = invMarketGroup | 1 = invTypes | ? = error
+                //listType 0 = invMarketGroup | 1 = InvType | ? = error
                 switch(listType) {
                   case 0:
                     icon = fetchMarketGroupIcon(snapshot.data[index].iconID ?? 0);

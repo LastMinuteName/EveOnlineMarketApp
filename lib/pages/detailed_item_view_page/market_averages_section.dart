@@ -33,7 +33,7 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
     CustomTheme? customTheme = Theme.of(context).extension<CustomTheme>();
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
     SharedPreferencesController prefController = Provider.of<SharedPreferencesController>(context);
-    _region = _region ?? prefController.getMarketRegion() ?? Region.theForge;
+    _region = _region ?? prefController.getMarketRegion();
     _marketHistoryFuture = getMarketHistory(typeID: widget.typeID, regionID: _region!.id);
     _marketStatsFuture = getMarketStats(typeID: widget.typeID, regionID: _region!.id);
 

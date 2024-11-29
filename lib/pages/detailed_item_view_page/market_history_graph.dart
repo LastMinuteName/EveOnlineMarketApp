@@ -60,22 +60,22 @@ class _MarketHistoryGraphState extends State<MarketHistoryGraph> {
                   maxY: maxAvg * 1.01,
                   minY: minAvg * 0.99,
                   lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
-                          fitInsideHorizontally: true,
-                          fitInsideVertically: false,
-                          getTooltipItems: (touchedSpots) {
-                            return touchedSpots.map((LineBarSpot touchedSpot) {
-                              return LineTooltipItem(
-                                  '',
-                                  Theme.of(context).textTheme.bodySmall!,
-                                  children: [
-                                    TextSpan(text: '${toCommaSeparated(marketHistory![touchedSpot.spotIndex].average)}\n'),
-                                    TextSpan(text: '${DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)}'),
-                                  ]
-                              );
-                            }).toList();
-                          }
-                      )
+                    touchTooltipData: LineTouchTooltipData(
+                      fitInsideHorizontally: true,
+                      fitInsideVertically: false,
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((LineBarSpot touchedSpot) {
+                          return LineTooltipItem(
+                            '',
+                            Theme.of(context).textTheme.bodySmall!,
+                            children: [
+                              TextSpan(text: '${toCommaSeparated(marketHistory![touchedSpot.spotIndex].average)}\n'),
+                              TextSpan(text: '${DateFormat('dd MMM yyyy').format(marketHistory![touchedSpot.spotIndex].date)}'),
+                            ]
+                          );
+                        }).toList();
+                      }
+                    )
                   ),
                   borderData: FlBorderData(
                     show: true,

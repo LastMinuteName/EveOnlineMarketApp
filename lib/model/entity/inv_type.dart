@@ -1,4 +1,4 @@
-class InvTypes {
+class InvType {
   final int typeID;
   final int groupID;
   final String typeName;
@@ -7,7 +7,7 @@ class InvTypes {
   final int published;
   final int? marketGroupID;
 
-  const InvTypes({
+  const InvType({
     required this.typeID,
     required this.groupID,
     required this.typeName,
