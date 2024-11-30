@@ -10,6 +10,7 @@ import '../model/entity/inv_type.dart';
 import '../model/entity/market_history.dart';
 import '../model/entity/market_stats.dart';
 import '../model/web_calls/evetycoon.dart';
+import '../pages/detailed_item_view_page/detailed_item_view_page.dart';
 import '../utils/formatting.dart';
 import '../utils/icon_grabber.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -34,34 +35,44 @@ class _InvTypeStatCardState extends State<InvTypeStatCard> {
     _region = _region ?? prefController.getMarketRegion();
 
     return Card(
-      child: FutureBuilder(
-        future: dbModel.readInvTypeByTypeID(widget.typeID),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-            return const CircularProgressIndicator();
-          }
-
-          InvType invType = snapshot.data;
-
-          return Column(
-            children: [
-              const SizedBox(height: 8),
-              fetchInvTypeIcon(invType.typeID ?? 0),
-              Text(
-                invType.typeName,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              //_fivePercentAverageSection(),
-              const SizedBox(height: 8),
-              _marketAverageSection(),
-            ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: (){
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => DetailedItemViewPage(typeID: widget.typeID),
+            ),
           );
-        }
+        },
+        child: FutureBuilder(
+          future: dbModel.readInvTypeByTypeID(widget.typeID),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+
+            InvType invType = snapshot.data;
+
+            return Column(
+              children: [
+                const SizedBox(height: 8),
+                fetchInvTypeIcon(invType.typeID ?? 0),
+                Text(
+                  invType.typeName,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                //_fivePercentAverageSection(),
+                const SizedBox(height: 8),
+                _marketAverageSection(),
+              ],
+            );
+          }
+        ),
       ),
     );
   }
