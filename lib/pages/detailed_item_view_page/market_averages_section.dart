@@ -2,6 +2,7 @@ import 'package:eve_online_market_application/model/entity/market_history.dart';
 import 'package:eve_online_market_application/pages/detailed_item_view_page/market_region_dialog.dart';
 import 'package:eve_online_market_application/utils/formatting.dart';
 import 'package:eve_online_market_application/utils/math.dart';
+import 'package:eve_online_market_application/widgets/market_stat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -132,41 +133,11 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
           child: Wrap(
             alignment: WrapAlignment.spaceEvenly,
             children: latestMarketHistory.map((element) =>
-              Column(
-                children: [
-                  Text(
-                    element["label"]!,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if(element["price"] != null) Text.rich(
-                    TextSpan(
-                      style: TextStyle(
-                        color: element["percentageChange"] > 0 ?
-                          Theme.of(context).extension<CustomTheme>()?.valueIncrease :
-                          Theme.of(context).extension<CustomTheme>()?.valueDecrease
-                      ),
-                      children: [
-                        WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: element["percentageChange"] > 0 ?
-                            Icon(
-                              Icons.arrow_upward,
-                              color: customTheme?.valueIncrease,
-                            ) :
-                            Icon(
-                              Icons.arrow_downward,
-                              color: customTheme?.valueDecrease,
-                            ),
-                        ),
-                        TextSpan(text: "${element["percentageChange"].toStringAsFixed(2)}%"),
-                      ]
-                    )
-                  ),
-                  element["price"] == null ? const CircularProgressIndicator() : Text(element["price"]!),
-                ],
-              ),
+              MarketStat(
+                label: element["label"],
+                percentageChange: element["percentageChange"],
+                price: element["price"],
+              )
             ).toList(),
           )
         );
@@ -192,13 +163,13 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
     Widget body = FutureBuilder(
       future: _marketStatsFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        Text? buyAvg;
-        Text? sellAvg;
+        String? buyAvg;
+        String? sellAvg;
 
         if(snapshot.hasData) {
           MarketStats marketStatsData = snapshot.data;
-          buyAvg = Text(toCommaSeparated(marketStatsData.buyAvgFivePercent));
-          sellAvg = Text(toCommaSeparated(marketStatsData.sellAvgFivePercent));
+          buyAvg = toCommaSeparated(marketStatsData.buyAvgFivePercent);
+          sellAvg = toCommaSeparated(marketStatsData.sellAvgFivePercent);
         }
         else if (snapshot.hasError) {
           return Text('${snapshot.error}');
@@ -207,31 +178,17 @@ class _MarketAveragesSectionState extends State<MarketAveragesSection> {
         return SizedBox(
           width: double.infinity,
           child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      appLocalizations!.labelBuy,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    buyAvg ?? const CircularProgressIndicator(),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      appLocalizations!.labelSell,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    sellAvg ?? const CircularProgressIndicator(),
-                  ],
-                ),
-              ]
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              MarketStat(
+                label: appLocalizations!.labelBuy,
+                price: buyAvg,
+              ),
+              MarketStat(
+                label: appLocalizations!.labelSell,
+                price: sellAvg,
+              ),
+            ],
           ),
         );
       }
