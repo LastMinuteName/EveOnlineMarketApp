@@ -1,7 +1,19 @@
+buildscript {
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10'
+    }
+    repositories {
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+    }
+}
+
 allprojects {
     repositories {
-        google()
         mavenCentral()
+        google()
+        gradlePluginPortal()
     }
 }
 

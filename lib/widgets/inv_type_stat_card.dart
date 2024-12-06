@@ -2,7 +2,6 @@ import 'package:eve_online_market_application/model/web_calls/eve_esi.dart';
 import 'package:eve_online_market_application/widgets/market_stat.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../constants/enums/eve_regions_market.dart';
 import '../model/controller/shared_preferences_controller.dart';
 import '../model/database/dbmodel.dart';
@@ -14,7 +13,6 @@ import '../pages/detailed_item_view_page/detailed_item_view_page.dart';
 import '../utils/formatting.dart';
 import '../utils/icon_grabber.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import '../utils/math.dart';
 
 class InvTypeStatCard extends StatefulWidget {

@@ -42,6 +42,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+
+        minSdkVersion(minSdk)
+        targetSdkVersion(targetSdk)
     }
 
     buildTypes {
@@ -50,6 +53,9 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
