@@ -24,11 +24,11 @@ class DetailedItemViewPage extends StatefulWidget {
 
 class _DetailedItemViewPageState extends State<DetailedItemViewPage> {
   InvType? item;
-  late bool _watchlisted;
   late Future _marketOrdersFuture;
 
   @override
   initState() {
+    super.initState();
     _marketOrdersFuture = getMarketOrders(typeID: widget.typeID);
   }
 

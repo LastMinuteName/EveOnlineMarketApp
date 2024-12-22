@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
+import 'package:path_provider/path_provider.dart';
 import '../entity/inv_type.dart';
 import '../entity/map_region.dart';
 import '../entity/watchlist.dart';
@@ -43,7 +43,15 @@ class DbModel with ChangeNotifier{
   }
 
   Future<bool> _initUserDB() async {
-    final dbPath = await getDatabasesPath();
+    final dbPath;
+
+    if (Platform.isAndroid) {
+      dbPath = await getDatabasesPath();
+    }
+    else {
+      dbPath = await getLibraryDirectory();
+    }
+
     final path = join(dbPath, "user.db");
 
     try {

@@ -22,6 +22,7 @@ class _MarketOrdersSectionState extends State<MarketOrdersSection> with SingleTi
 
   @override
   initState() {
+    super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
 

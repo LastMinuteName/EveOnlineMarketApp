@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class InvTypetatList extends StatefulWidget {
+class InvTypeStatList extends StatefulWidget {
   final int typeID;
-  const InvTypetatList({super.key, required this.typeID});
+  const InvTypeStatList({super.key, required this.typeID});
 
   @override
-  State<InvTypetatList> createState() => _InvTypetatListState();
+  State<InvTypeStatList> createState() => _InvTypeStatListState();
 }
 
-class _InvTypetatListState extends State<InvTypetatList> {
+class _InvTypeStatListState extends State<InvTypeStatList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
