@@ -73,10 +73,6 @@ android {
     }
 
     compileSdk 34
-
-    androidResources {
-        noCompress 'png'
-    }
 }
 
 flutter {
